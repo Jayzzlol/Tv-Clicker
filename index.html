@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Jayz Candy Clicker</title>
+<title>TvClicker</title>
 <style>
 :root{--bg:#100b1d;--panel:#211536;--panel2:#2b1b42;--pink:#f04b9b;--gold:#ffd86b;--text:#fff;--muted:#c9badb;--green:#70e0a0;--red:#ff7777}
 *{box-sizing:border-box}
@@ -20,13 +20,13 @@ header p{color:var(--muted);margin:8px 0}
 .balance{text-align:center;background:linear-gradient(145deg,#39205a,#211536);padding:24px}
 .balance-number{font-size:clamp(1.8rem,7.5vw,4rem);font-weight:900;color:var(--gold);margin:4px auto;max-width:100%;min-width:0;overflow-wrap:anywhere;word-break:break-word;line-height:1.12;font-variant-numeric:tabular-nums}
 .statsline{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;color:var(--muted)}
-#candyButton{display:block;width:clamp(180px,30vw,250px);height:clamp(180px,30vw,250px);margin:28px auto 14px;border:2px solid #ffb5b5;border-radius:50%;padding:0;background:radial-gradient(ellipse at 28% 20%,#fff1f1 0%,#ff9a9a 8%,#ff4848 28%,#ed101f 54%,#b90020 76%,#690014 100%);color:white;font-size:1rem;font-weight:900;cursor:pointer;box-shadow:inset -18px -24px 28px #57000e99,inset 10px 12px 20px #ffffff66,0 7px 0 #760018,0 12px 24px #0008,0 0 35px #ff263b44;transition:filter .12s ease;position:relative;overflow:hidden;isolation:isolate;touch-action:manipulation}
-#candyButton::before{content:"";position:absolute;width:35%;height:17%;left:18%;top:13%;border-radius:50%;background:linear-gradient(180deg,#ffffffdd,#ffffff08);filter:blur(2px);transform:rotate(-32deg);z-index:-1}
-#candyButton::after{content:"";position:absolute;inset:7%;border-radius:50%;border:1px solid #ffffff55;box-shadow:inset 2px 3px 7px #ffffff33;pointer-events:none}
-#candyButton:hover{filter:brightness(1.08)}
-#candyButton:active{filter:brightness(.98);box-shadow:inset -18px -24px 28px #57000e99,inset 10px 12px 20px #ffffff66,0 2px 0 #760018,0 5px 12px #0007}
-#candyButton:focus-visible{outline:4px solid #ffcfdf;outline-offset:7px}
-.candy-icon{font-size:clamp(3.3rem,8vw,4.6rem);display:block;position:relative;z-index:1;filter:drop-shadow(0 3px 3px #79001699)}
+#TVButton{display:block;width:clamp(180px,30vw,250px);height:clamp(180px,30vw,250px);margin:28px auto 14px;border:2px solid #ffb5b5;border-radius:50%;padding:0;background:radial-gradient(ellipse at 28% 20%,#fff1f1 0%,#ff9a9a 8%,#ff4848 28%,#ed101f 54%,#b90020 76%,#690014 100%);color:white;font-size:1rem;font-weight:900;cursor:pointer;box-shadow:inset -18px -24px 28px #57000e99,inset 10px 12px 20px #ffffff66,0 7px 0 #760018,0 12px 24px #0008,0 0 35px #ff263b44;transition:filter .12s ease;position:relative;overflow:hidden;isolation:isolate;touch-action:manipulation}
+#TVButton::before{content:"";position:absolute;width:35%;height:17%;left:18%;top:13%;border-radius:50%;background:linear-gradient(180deg,#ffffffdd,#ffffff08);filter:blur(2px);transform:rotate(-32deg);z-index:-1}
+#TVButton::after{content:"";position:absolute;inset:7%;border-radius:50%;border:1px solid #ffffff55;box-shadow:inset 2px 3px 7px #ffffff33;pointer-events:none}
+#TVButton:hover{filter:brightness(1.08)}
+#TVButton:active{filter:brightness(.98);box-shadow:inset -18px -24px 28px #57000e99,inset 10px 12px 20px #ffffff66,0 2px 0 #760018,0 5px 12px #0007}
+#TVButton:focus-visible{outline:4px solid #ffcfdf;outline-offset:7px}
+.TV-icon{font-size:clamp(3.3rem,8vw,4.6rem);display:block;position:relative;z-index:1;filter:drop-shadow(0 3px 3px #79001699)}
 .ball-label{display:block;position:relative;z-index:1;font-size:.85rem;letter-spacing:1.4px;text-shadow:0 2px 3px #740014}
 .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
 .tab{flex:1;min-width:110px;border:1px solid #694d82;background:#302044;color:white;padding:11px;border-radius:12px;cursor:pointer;font-weight:750}
@@ -66,30 +66,59 @@ footer{text-align:center;color:#9f91ae;font-size:.8rem;margin:18px 0}
 @keyframes scarePop{from{transform:scale(.15) rotate(-12deg);opacity:.2}to{transform:scale(1) rotate(0);opacity:1}}
 @media(prefers-reduced-motion:reduce){#rebirthScare.show{animation:none}#rebirthScare .scare-face{animation:none}}
 
+
+/* TV-bakery inspired visual refresh (original styling and artwork) */
+:root{--bg:#2a160d;--panel:#4a2b1b;--panel2:#5b3824;--pink:#d58a3a;--gold:#ffe3a1;--text:#fff8e8;--muted:#e4c9a6;--green:#8ee0a4;--red:#ff9b83}
+body{background:radial-gradient(ellipse at 50% 0%,#8a542e 0%,#4a2918 45%,#21120d 100%);color:var(--text)}
+h1{color:#ffe5a8;text-shadow:0 3px 0 #663717,0 7px 22px #170a05}
+header p{color:#f0d5b2}
+.panel{background:linear-gradient(160deg,#68452dF2,#382015F5);border:2px solid #a8794d;border-radius:15px;box-shadow:0 12px 32px #13090399,inset 0 1px #f6d4a522}
+.balance{background:linear-gradient(150deg,#765033,#402416);}
+.balance-number{color:#ffe3a1;text-shadow:0 3px 0 #5a3217}
+#TVButton{width:clamp(190px,31vw,270px);height:clamp(190px,31vw,270px);border:8px solid #8b542b;border-radius:50%;background:radial-gradient(circle at 35% 28%,#fff2c7 0%,#e9b66e 23%,#c77c38 62%,#82431f 100%);box-shadow:inset -16px -20px 24px #57280c88,inset 10px 12px 20px #fff5d977,0 9px 0 #542b16,0 14px 24px #0009,0 0 28px #f0bd6b22;transition:transform .08s ease,filter .12s ease}
+#TVButton::before{content:"";position:absolute;width:35%;height:17%;left:18%;top:13%;border-radius:50%;background:linear-gradient(180deg,#ffffffdd,#ffffff08);filter:blur(2px);transform:rotate(-32deg);z-index:-1}
+#TVButton::after{inset:7%;border:2px dotted #fff0c566;box-shadow:inset 2px 3px 7px #ffffff33}
+#TVButton:active{transform:translateY(5px) scale(.985);box-shadow:inset -16px -20px 24px #57280c88,inset 10px 12px 20px #fff5d977,0 3px 0 #542b16,0 6px 12px #0008}
+.TV-icon{font-size:clamp(6rem,15vw,9rem);filter:drop-shadow(0 5px 4px #5a2b1488)}
+.ball-label{color:#5a2d14;font-weight:1000;text-shadow:0 1px 0 #fff0c9;letter-spacing:1.8px}
+.tab{background:#4b2d1d;border:1px solid #a8794d;color:#fff1d7}
+.tab.active{background:linear-gradient(#e7ad5e,#bd7433);border-color:#f3cb8b;color:#32190d;text-shadow:0 1px #ffffff66}
+.item,.achievement{background:linear-gradient(145deg,#70482c,#4c2d1b);border:1px solid #a8794d;box-shadow:inset 0 1px #ffffff12}
+.item h3,.achievement strong{color:#ffe2a6}
+.price{color:#ffdf8b}
+button.action{background:linear-gradient(#e7ad5e,#bd7433);color:#32190d;border:1px solid #f0c98b;box-shadow:0 3px 0 #77431f;font-weight:900}
+button.action:active{transform:translateY(2px);box-shadow:0 1px 0 #77431f}
+input{background:#2a170e;border:1px solid #a8794d;color:#fff4df}
+.notice{background:#593922;color:#f2d9b6;border:1px solid #93623b}
+.security{background:#24432f;border-color:#65956d}
+.danger{background:linear-gradient(#b65b48,#873326)!important;color:white!important;border-color:#d68a76!important}
+footer{color:#d3b18a}
+@media(min-width:760px){.layout{grid-template-columns:.9fr 1.1fr;gap:18px}}
+
 </style>
 </head>
 <body>
 <div class="wrap">
-<header><h1>🍬 JAYZ CANDY CLICKER</h1><p>Click candy, build your empire, and unlock bigger upgrades!</p></header>
+<header><h1>📺 TvClicker</h1><p>Tap the television, buy upgrades, and build the ultimate TV station!</p></header>
 <div id="game">
 <div id="announcementBanner" class="notice" style="display:none;text-align:center;font-weight:800;background:#4a2469;border:1px solid #b78aff"></div>
 <div class="layout">
   <section class="panel balance">
-    <div style="font-size:1.1rem">YOUR CANDY BALANCE</div>
-    <div class="balance-number" id="candy">0 🍬</div>
+    <div style="font-size:1.1rem">YOUR TV POINTS</div>
+    <div class="balance-number" id="TV">0 📺</div>
     <div class="statsline"><span id="perClick">+1 per click</span><span id="perSecond">0 per second</span></div>
-    <button id="candyButton" aria-label="Tap the red candy ball to earn candy"><span class="candy-icon">🍬</span><span class="ball-label">TAP ME!</span></button>
+    <button id="TVButton" aria-label="Click the TV to earn TV points"><span class="TV-icon">▶</span><span class="ball-label">POWER ON!</span></button>
     <div class="notice" style="margin-top:14px;text-align:left">
-      <h2 style="margin:0 0 6px">🎉 Random Candy Events</h2>
-      <p id="candyEventStatus" class="small">Thanksgiving Eating: 30% chance • Trick-or-Treat: 10% chance. Events are checked every 10 minutes.</p>
-      <strong id="candyEventTimer">Next random event check in 10:00</strong>
+      <h2 style="margin:0 0 6px">📡 Random Broadcast Events</h2>
+      <p id="TVEventStatus" class="small">Thanksgiving Eating: 30% chance • Trick-or-Treat: 10% chance. Events are checked every 10 minutes.</p>
+      <strong id="TVEventTimer">Next random event check in 10:00</strong>
     </div>
     <p class="small">Total earned: <strong id="total">0</strong></p>
     <div class="notice" style="text-align:left;margin-top:18px">
       <h2 style="margin:0 0 6px">🌟 Rebirth</h2>
-      <p class="small">Reset your candy and shop upgrades to earn a permanent x2 multiplier. Rebirth is the most expensive upgrade in the game!</p>
-      <div class="statsline" style="justify-content:space-between"><span>Rebirth cost:</span><strong id="rebirthCost">2,000,000,000,000,000 🍬</strong></div>
-      <button class="action" id="rebirthButton" style="width:100%;margin-top:10px" disabled>REBIRTH — NEED MORE CANDY</button>
+      <p class="small">Reset your TV and shop upgrades to earn a permanent x2 multiplier. Rebirth is the most expensive upgrade in the game!</p>
+      <div class="statsline" style="justify-content:space-between"><span>Rebirth cost:</span><strong id="rebirthCost">2,000,000,000,000,000 📺</strong></div>
+      <button class="action" id="rebirthButton" style="width:100%;margin-top:10px" disabled>REBIRTH — NEED MORE TV</button>
       <p class="small" id="rebirthInfo">Rebirths: 0 • Permanent bonus: x1</p>
     </div>
   </section>
@@ -103,30 +132,30 @@ footer{text-align:center;color:#9f91ae;font-size:.8rem;margin:18px 0}
       <button class="tab" data-tab="admin">🔐 Admin</button>
     </nav>
     <div class="section active" id="shop">
-      <h2>🛒 Upgrade Shop</h2><div class="shop-grid" id="shopItems"></div>
+      <h2>📡 TV Station Shop</h2><div class="shop-grid" id="shopItems"></div>
     </div>
-    <section class="notice" id="usdCandyShop" style="margin-top:20px;text-align:left">
-      <h2 style="margin:0 0 6px">💵 Candy Shop</h2>
-      <p class="small">Choose a candy pack. These are demo prices only — checkout is not connected and no payment will be taken.</p>
+    <section class="notice" id="usdTVShop" style="margin-top:20px;text-align:left">
+      <h2 style="margin:0 0 6px">💵 TV Point Packs</h2>
+      <p class="small">Choose a TV point pack. These are demo prices only — checkout is not connected and no payment will be taken.</p>
       <div class="shop-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px">
-        <div class="shop-item"><strong>🍬 Starter Pack</strong><p class="small">1,000 candies</p><strong>$0.99 USD</strong><button class="action" type="button" disabled>Checkout coming soon</button></div>
-        <div class="shop-item"><strong>🍭 Sweet Pack</strong><p class="small">10,000 candies</p><strong>$4.99 USD</strong><button class="action" type="button" disabled>Checkout coming soon</button></div>
-        <div class="shop-item"><strong>🎁 Mega Pack</strong><p class="small">100,000 candies</p><strong>$9.99 USD</strong><button class="action" type="button" disabled>Checkout coming soon</button></div>
-        <div class="shop-item"><strong>👑 Jayz VIP Pack</strong><p class="small">1,000,000 candies</p><strong>$19.99 USD</strong><button class="action" type="button" disabled>Checkout coming soon</button></div>
+        <div class="shop-item"><strong>📺 Starter Pack</strong><p class="small">1,000 TVs</p><strong>$0.99 USD</strong><button class="action" type="button" disabled>Checkout coming soon</button></div>
+        <div class="shop-item"><strong>📡 Signal Pack</strong><p class="small">10,000 TVs</p><strong>$4.99 USD</strong><button class="action" type="button" disabled>Checkout coming soon</button></div>
+        <div class="shop-item"><strong>🎁 Mega Pack</strong><p class="small">100,000 TVs</p><strong>$9.99 USD</strong><button class="action" type="button" disabled>Checkout coming soon</button></div>
+        <div class="shop-item"><strong>👑 TV Station Supporter Pack</strong><p class="small">1,000,000 TVs</p><strong>$19.99 USD</strong><button class="action" type="button" disabled>Checkout coming soon</button></div>
       </div>
       <p class="small" style="margin-bottom:0">Real-money purchases require a secure payment provider and server-side verification. Ask a parent or guardian before any purchase.</p>
     </section>
 
 <div class="section" id="codes">
       <h2>🎁 Redeem a Code</h2>
-      <label for="redeemInput">Enter your code</label><input id="redeemInput" placeholder="Example: JAYZ" maxlength="32">
-      <button class="action" id="redeemButton">REDEEM CODE</button><div id="codeMessage" class="notice" aria-live="polite">Try a code to get bonus candy!</div>
+      <label for="redeemInput">Enter your code</label><input id="redeemInput" placeholder="Example: TVTIME" maxlength="32">
+      <button class="action" id="redeemButton">REDEEM CODE</button><div id="codeMessage" class="notice" aria-live="polite">Try a code to get bonus TV!</div>
       <div id="ownerCodeTools" style="display:none;border:1px solid #8b5cf6;border-radius:14px;padding:16px;margin-top:20px">
       <hr style="border-color:#4b365f;margin:0 0 20px">
       <h2>👑 Owner Only: Create Codes</h2>
       <p class="small">Only available while your owner admin panel is unlocked.</p>
       <label for="newCode">Code name</label><input id="newCode" placeholder="Your code" maxlength="32">
-      <label for="newReward">Candy reward</label><input id="newReward" type="number" min="1" max="100000000" value="1000">
+      <label for="newReward">TV reward</label><input id="newReward" type="number" min="1" max="100000000" value="1000">
       <button class="action" id="createCode">CREATE CODE</button>
       <div id="codeList"></div>
       </div>
@@ -140,9 +169,9 @@ footer{text-align:center;color:#9f91ae;font-size:.8rem;margin:18px 0}
 
     <div class="section" id="stats">
       <h2>📊 Player Statistics</h2>
-      <div class="stat-row"><span>Total candy earned</span><strong id="statTotal">0</strong></div>
+      <div class="stat-row"><span>Total TV earned</span><strong id="statTotal">0</strong></div>
       <div class="stat-row"><span>Click power</span><strong id="statClick">1</strong></div>
-      <div class="stat-row"><span>Auto candy / second</span><strong id="statAuto">0</strong></div>
+      <div class="stat-row"><span>Auto TV / second</span><strong id="statAuto">0</strong></div>
       <div class="stat-row"><span>Multiplier</span><strong id="statMult">x1</strong></div>
       <div class="stat-row"><span>Upgrades purchased</span><strong id="statUpgrades">0</strong></div>
       <div class="stat-row"><span>Codes redeemed</span><strong id="statCodes">0</strong></div>
@@ -151,33 +180,33 @@ footer{text-align:center;color:#9f91ae;font-size:.8rem;margin:18px 0}
 
     <div class="section" id="admin">
       <h2>🔐 Owner Admin Panel (Local Demo)</h2>
-      <div class="notice">Local demo protection only. A PIN in a browser-only game is not secure against other people inspecting or changing the website code. For a truly private owner panel, the game needs server-side accounts and authentication.</div>
+      <div class="notice">Owner access is verified by a Supabase Edge Function. Your admin code is stored as a GitHub Actions secret and is never included in this page's source code.</div>
       <div id="adminLogin">
         <label for="adminPin">Owner PIN</label>
-        <input id="adminPin" type="password" inputmode="text" autocomplete="off" maxlength="12" placeholder="Enter owner PIN">
+        <input id="adminPin" type="password" inputmode="text" autocomplete="off" maxlength="64" placeholder="Enter your TvClicker admin code">
         <button class="action" id="adminUnlock">SET PIN / UNLOCK</button>
         <p id="adminMessage" class="small" aria-live="polite">Demo only: this PIN protects this browser view, not the website from code inspection.</p>
       </div>
       <div id="adminDashboard" style="display:none">
-        <div class="stat-row"><span>Current player candy</span><strong id="adminCandy">0</strong></div>
-        <div class="stat-row"><span>Total candy earned</span><strong id="adminTotal">0</strong></div>
+        <div class="stat-row"><span>Current player TV</span><strong id="adminTV">0</strong></div>
+        <div class="stat-row"><span>Total TV earned</span><strong id="adminTotal">0</strong></div>
         <div class="stat-row"><span>Upgrades owned</span><strong id="adminUpgrades">0</strong></div>
         <div class="stat-row"><span>Rebirths</span><strong id="adminRebirths">0</strong></div>
         <div class="stat-row"><span>Redeemed codes</span><strong id="adminCodes">0</strong></div>
         <h3>Owner tools</h3>
-        <label for="adminGrant">Give this browser candy</label>
+        <label for="adminGrant">Give this browser TV</label>
         <input id="adminGrant" type="number" min="1" max="1000000000" value="1000">
-        <button class="action" id="adminGive">GIVE CANDY</button>
+        <button class="action" id="adminGive">GIVE TV</button>
         <div class="row">
-          <div><label for="adminSetBalance">Set candy balance</label><input id="adminSetBalance" type="number" min="0" max="9007199254740991" placeholder="New balance"></div>
-          <div><label for="adminTake">Remove candy</label><input id="adminTake" type="number" min="1" max="9007199254740991" placeholder="Amount to remove"></div>
+          <div><label for="adminSetBalance">Set TV balance</label><input id="adminSetBalance" type="number" min="0" max="9007199254740991" placeholder="New balance"></div>
+          <div><label for="adminTake">Remove TV</label><input id="adminTake" type="number" min="1" max="9007199254740991" placeholder="Amount to remove"></div>
         </div>
         <button class="action" id="adminSet">SET BALANCE</button>
-        <button class="action danger" id="adminTakeButton">TAKE CANDY</button>
+        <button class="action danger" id="adminTakeButton">TAKE TV</button>
         <h3>📢 Announcement</h3>
         <p class="small">Show a message banner in this browser's game.</p>
         <label for="adminAnnouncement">Announcement message</label>
-        <input id="adminAnnouncement" maxlength="120" placeholder="Example: Double candy event starts now!">
+        <input id="adminAnnouncement" maxlength="120" placeholder="Example: Double TV event starts now!">
         <button class="action" id="adminAnnounce">POST ANNOUNCEMENT</button>
         <button class="action danger" id="adminClearAnnouncement">CLEAR ANNOUNCEMENT</button>
         <div class="notice" id="adminAnnouncementStatus">No announcement posted.</div>
@@ -188,10 +217,10 @@ footer{text-align:center;color:#9f91ae;font-size:.8rem;margin:18px 0}
         <h3>🌍 Global Event Control</h3>
         <p class="small">Start an event for this game/browser. A true event shared by every player needs a server.</p>
         <label for="globalEventName">Event</label>
-        <select id="globalEventName"><option value="Thanksgiving Eating">🦃 Thanksgiving Eating (10x minimum)</option><option value="Trick-or-Treat">🎃 Trick-or-Treat (10x)</option><option value="Jayz Mega Candy Party">🍬 Jayz Mega Candy Party</option></select>
+        <select id="globalEventName"><option value="Thanksgiving Eating">🦃 Thanksgiving Eating (10x minimum)</option><option value="Trick-or-Treat">🎃 Trick-or-Treat (10x)</option><option value="TV Station Takeover">📺 TV Station Takeover</option></select>
         <div class="row">
           <div><label for="globalEventMinutes">Duration (minutes)</label><input id="globalEventMinutes" type="number" min="1" max="60" value="5"></div>
-          <div><label for="globalEventMultiplier">Candy multiplier (1–10)</label><input id="globalEventMultiplier" type="number" min="1" max="10" value="3"></div>
+          <div><label for="globalEventMultiplier">TV multiplier (1–10)</label><input id="globalEventMultiplier" type="number" min="1" max="10" value="3"></div>
         </div>
         <div class="notice" id="globalEventStatus">No global event is running.</div>
         <button class="action" id="startGlobalEvent">🚀 START GLOBAL EVENT</button>
@@ -204,7 +233,7 @@ footer{text-align:center;color:#9f91ae;font-size:.8rem;margin:18px 0}
     <div class="section" id="security">
       <h2>🛡️ Game Safety Checks</h2>
       <div class="security"><span style="font-size:1.7rem">🛡️</span><div><strong>Basic value checks enabled</strong><div class="small">Invalid values are ignored; players are never banned.</div></div></div>
-      <p class="small">Your game stays playable. These checks help prevent broken candy totals and purchases without locking players out.</p>
+      <p class="small">Your game stays playable. These checks help prevent broken TV totals and purchases without locking players out.</p>
     </div>
   </section>
 </div>
@@ -212,62 +241,115 @@ footer{text-align:center;color:#9f91ae;font-size:.8rem;margin:18px 0}
 
 <div id="rebirthScare" role="alert" aria-live="assertive">
   <div class="scare-face" aria-hidden="true">👹</div>
-  <div class="scare-title">JAYZ GOT YOU!</div>
+  <div class="scare-title">SIGNAL LOST!</div>
   <div class="scare-sub">You reached Rebirth 2... spooky!</div>
 </div>
 
-<footer>Jayz Candy Clicker • Single-file browser game • Progress saves in this browser</footer>
+<footer>TvClicker TV Clicker • Supabase-powered shared events and announcements • Player progress saves in this browser</footer>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./supabase-config.js"></script>
 <script>
 (() => {
   "use strict";
-  const SAVE_KEY = "jayzCandyClicker_v1";
+  const SAVE_KEY = "tvclicker_v1";
   const items = [
-    {name:"🍭 Sweet Gloves",desc:"+1 candy per click",base:10,kind:"click",amount:1},
-    {name:"🤖 Auto Clicker",desc:"+1 candy per second",base:50,kind:"auto",amount:1},
-    {name:"🍫 Chocolate Machine",desc:"+5 candy per click",base:150,kind:"click",amount:5},
-    {name:"✨ Candy Multiplier",desc:"Double your clicking power",base:300,kind:"mult",amount:2},
-    {name:"👑 Golden Finger",desc:"+25 candy per click",base:750,kind:"click",amount:25},
-    {name:"🏭 Candy Factory",desc:"+10 candy per second",base:1200,kind:"auto",amount:10},
-    {name:"🧁 Cupcake Crew",desc:"+50 candy per second",base:5000,kind:"auto",amount:50},
-    {name:"🍬 Candy Cannon",desc:"+100 candy per click",base:12000,kind:"click",amount:100},
-    {name:"🚀 Sugar Rocket",desc:"+500 candy per second",base:50000,kind:"auto",amount:500},
-    {name:"💎 Diamond Candy",desc:"+1,000 candy per click",base:150000,kind:"click",amount:1000},
-    {name:"🌈 Rainbow Factory",desc:"+5,000 candy per second",base:500000,kind:"auto",amount:5000},
-    {name:"👑 Candy Overlord",desc:"+10,000 candy per click",base:1500000,kind:"click",amount:10000},
-    {name:"🛸 Alien Candy Lab",desc:"+25,000 candy per second",base:5000000,kind:"auto",amount:25000},
-    {name:"⚡ Lightning Lollipop",desc:"+50,000 candy per click",base:12000000,kind:"click",amount:50000},
-    {name:"🏰 Sugar Kingdom",desc:"+100,000 candy per second",base:30000000,kind:"auto",amount:100000},
-    {name:"🔥 Firecracker Fudge",desc:"+250,000 candy per click",base:75000000,kind:"click",amount:250000},
-    {name:"🌌 Galaxy Gumball",desc:"+500,000 candy per second",base:200000000,kind:"auto",amount:500000},
+    {name:"🍭 Sweet Gloves",desc:"+1 TV per click",base:10,kind:"click",amount:1},
+    {name:"🤖 Auto Clicker",desc:"+1 TV per second",base:50,kind:"auto",amount:1},
+    {name:"🍫 Chocolate Machine",desc:"+5 TV per click",base:150,kind:"click",amount:5},
+    {name:"✨ TV Multiplier",desc:"Double your clicking power",base:300,kind:"mult",amount:2},
+    {name:"👑 Golden Finger",desc:"+25 TV per click",base:750,kind:"click",amount:25},
+    {name:"🏭 TV Factory",desc:"+10 TV per second",base:1200,kind:"auto",amount:10},
+    {name:"🧁 Cupcake Crew",desc:"+50 TV per second",base:5000,kind:"auto",amount:50},
+    {name:"📺 TV Cannon",desc:"+100 TV per click",base:12000,kind:"click",amount:100},
+    {name:"🚀 Sugar Rocket",desc:"+500 TV per second",base:50000,kind:"auto",amount:500},
+    {name:"💎 Diamond TV",desc:"+1,000 TV per click",base:150000,kind:"click",amount:1000},
+    {name:"🌈 Rainbow Factory",desc:"+5,000 TV per second",base:500000,kind:"auto",amount:5000},
+    {name:"👑 TV Overlord",desc:"+10,000 TV per click",base:1500000,kind:"click",amount:10000},
+    {name:"🛸 Alien TV Lab",desc:"+25,000 TV per second",base:5000000,kind:"auto",amount:25000},
+    {name:"⚡ Lightning Lollipop",desc:"+50,000 TV per click",base:12000000,kind:"click",amount:50000},
+    {name:"🏰 Sugar Kingdom",desc:"+100,000 TV per second",base:30000000,kind:"auto",amount:100000},
+    {name:"🔥 Firecracker Fudge",desc:"+250,000 TV per click",base:75000000,kind:"click",amount:250000},
+    {name:"🌌 Galaxy Gumball",desc:"+500,000 TV per second",base:200000000,kind:"auto",amount:500000},
     {name:"💫 Cosmic Clicker",desc:"Double your total multiplier",base:500000000,kind:"mult",amount:2},
-    {name:"🐉 Dragon Candy Mine",desc:"+2,500,000 candy per second",base:1500000000,kind:"auto",amount:2500000},
-    {name:"☀️ Solar Sugar Tap",desc:"+5,000,000 candy per click",base:4000000000,kind:"click",amount:5000000},
-    {name:"🪐 Planet of Sweets",desc:"+25,000,000 candy per second",base:15000000000,kind:"auto",amount:25000000},
-    {name:"🏆 Infinite Candy Crown",desc:"Double your total multiplier",base:50000000000,kind:"mult",amount:2},
-    {name:"🌋 Volcano Candy Core",desc:"+50,000,000 candy per second",base:125000000000,kind:"auto",amount:50000000},
-    {name:"🧿 Mystic Sugar Eye",desc:"+100,000,000 candy per click",base:300000000000,kind:"click",amount:100000000},
-    {name:"🦾 Titan Candy Bot",desc:"+250,000,000 candy per second",base:750000000000,kind:"auto",amount:250000000},
+    {name:"🐉 Dragon TV Mine",desc:"+2,500,000 TV per second",base:1500000000,kind:"auto",amount:2500000},
+    {name:"☀️ Solar Sugar Tap",desc:"+5,000,000 TV per click",base:4000000000,kind:"click",amount:5000000},
+    {name:"🪐 Planet of Sweets",desc:"+25,000,000 TV per second",base:15000000000,kind:"auto",amount:25000000},
+    {name:"🏆 Infinite TV Crown",desc:"Double your total multiplier",base:50000000000,kind:"mult",amount:2},
+    {name:"🌋 Volcano TV Core",desc:"+50,000,000 TV per second",base:125000000000,kind:"auto",amount:50000000},
+    {name:"🧿 Mystic Sugar Eye",desc:"+100,000,000 TV per click",base:300000000000,kind:"click",amount:100000000},
+    {name:"🦾 Titan TV Bot",desc:"+250,000,000 TV per second",base:750000000000,kind:"auto",amount:250000000},
     {name:"🌠 Stardust Lollipop",desc:"Double your total multiplier",base:1800000000000,kind:"mult",amount:2},
-    {name:"🏙️ Candy Mega City",desc:"+1,000,000,000 candy per second",base:5000000000000,kind:"auto",amount:1000000000},
-    {name:"🌀 Quantum Candy Clicker",desc:"+2,500,000,000 candy per click",base:12500000000000,kind:"click",amount:2500000000},
-    {name:"👾 Galactic Gummy Factory",desc:"+10,000,000,000 candy per second",base:40000000000000,kind:"auto",amount:10000000000},
+    {name:"🏙️ TV Mega City",desc:"+1,000,000,000 TV per second",base:5000000000000,kind:"auto",amount:1000000000},
+    {name:"🌀 Quantum TV Clicker",desc:"+2,500,000,000 TV per click",base:12500000000000,kind:"click",amount:2500000000},
+    {name:"👾 Galactic Gummy Factory",desc:"+10,000,000,000 TV per second",base:40000000000000,kind:"auto",amount:10000000000},
     {name:"💜 Hollow Purple Pop",desc:"Triple your total multiplier",base:100000000000000,kind:"mult",amount:3},
-    {name:"🐲 Ultimate Dragon Treat",desc:"+50,000,000,000 candy per second",base:300000000000000,kind:"auto",amount:50000000000},
-    {name:"🌌 Universe Candy Engine",desc:"+100,000,000,000 candy per click",base:750000000000000,kind:"click",amount:100000000000},
-    {name:"♾️ Jayz Infinity Machine",desc:"Double your total multiplier",base:1500000000000000,kind:"mult",amount:2}
+    {name:"🐲 Ultimate Dragon Treat",desc:"+50,000,000,000 TV per second",base:300000000000000,kind:"auto",amount:50000000000},
+    {name:"🌌 Universe TV Engine",desc:"+100,000,000,000 TV per click",base:750000000000000,kind:"click",amount:100000000000},
+    {name:"♾️ Infinite Broadcast Tower",desc:"Double your total multiplier",base:1500000000000000,kind:"mult",amount:2}
   ];
   const defaultCodes = [
-    {code:"JAYZ",reward:100},{code:"FREECANDY",reward:500},
+    {code:"TvClicker",reward:100},{code:"FREE-TV",reward:500},
     {code:"RICH",reward:5000},{code:"UPDATE",reward:10000}
   ];
   let state = {
-    candy:0,total:0,clickPower:1,auto:0,multiplier:1,
+    TV:0,total:0,clickPower:1,auto:0,multiplier:1,
     owned:Array(items.length).fill(0),codes:defaultCodes,
-    redeemed:[],achievements:[],rebirths:0,nextEventRoll:Date.now()+600000,activeRandomEvent:null,candyBoostUntil:0,announcement:"",globalEvent:null
+    redeemed:[],achievements:[],rebirths:0,nextEventRoll:Date.now()+600000,activeRandomEvent:null,TVBoostUntil:0,announcement:"",globalEvent:null
   };
   const $ = id => document.getElementById(id);
   const safeInt = n => Number.isSafeInteger(n) && n >= 0;
+  let sb = null, currentUser = null, globalChannel = null;
+  let adminCode = "";
+  function applyGlobalState(row){
+    if(!row)return;
+    state.announcement=typeof row.announcement==="string"?row.announcement.slice(0,120):"";
+    const ev=row.active_event;
+    state.globalEvent=ev&&typeof ev.name==="string"&&Number.isFinite(Number(ev.endsAt))?{name:ev.name,multiplier:Number(ev.multiplier)||1,endsAt:Number(ev.endsAt)}:null;
+    render(); updateGlobalEventAdmin();
+  }
+  async function refreshGlobalState(){
+    if(!sb)return;
+    const {data,error}=await sb.from("game_state").select("announcement,active_event").eq("id",1).maybeSingle();
+    if(error){console.warn("Could not load shared game state:",error.message);return;}
+    if(data)applyGlobalState(data);
+  }
+  async function initSupabase(){
+    const cfg=window.TvClicker_SUPABASE_CONFIG||{};
+    if(!cfg.url||!cfg.anonKey||cfg.url.includes("YOUR_")||cfg.anonKey.includes("YOUR_")){
+      $("adminMessage").textContent="Supabase setup needed: add your project URL and anon key in supabase-config.js.";
+      return;
+    }
+    if(!window.supabase||!window.supabase.createClient){
+      $("adminMessage").textContent="Supabase client could not load. Check your internet connection."; return;
+    }
+    try{
+      sb=window.supabase.createClient(cfg.url,cfg.anonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+      let {data:{session}}=await sb.auth.getSession();
+      if(!session){
+        const signed=await sb.auth.signInAnonymously();
+        if(signed.error)throw signed.error;
+        session=signed.data.session;
+      }
+      currentUser=session?.user||null;
+      await refreshGlobalState();
+      globalChannel=sb.channel("TvClicker-global-state")
+        .on("postgres_changes",{event:"*",schema:"public",table:"game_state"},payload=>applyGlobalState(payload.new))
+        .subscribe();
+      $("adminMessage").textContent="Supabase connected. Signed in automatically"+(currentUser?" as player "+currentUser.id.slice(0,8):"")+".";
+    }catch(error){
+      console.error("Supabase startup failed:",error);
+      $("adminMessage").textContent="Supabase sign-in failed: "+(error.message||"Check Supabase Auth settings.");
+    }
+  }
+  async function adminRequest(action,payload={}){
+    if(!sb)throw new Error("Supabase is not configured yet.");
+    if(!adminCode)throw new Error("Unlock the owner panel first.");
+    const {data,error}=await sb.functions.invoke("admin",{body:{action,code:adminCode,...payload}});
+    if(error)throw new Error(error.message||"Admin request failed.");
+    if(!data||data.success!==true)throw new Error(data?.error||"Admin request was rejected.");
+    return data;
+  }
   // Compact display formatting keeps large balances readable without changing saved values.
   function formatNumber(value){
     const n=Number(value);
@@ -296,12 +378,12 @@ footer{text-align:center;color:#9f91ae;font-size:.8rem;margin:18px 0}
       state.rebirths=Number.isSafeInteger(state.rebirths)&&state.rebirths>=0?state.rebirths:0;
       state.nextEventRoll=Number.isFinite(s.nextEventRoll)&&s.nextEventRoll>Date.now()?s.nextEventRoll:Date.now()+600000;
       state.activeRandomEvent=s.activeRandomEvent&&typeof s.activeRandomEvent.name==="string"&&Number.isFinite(s.activeRandomEvent.endsAt)?s.activeRandomEvent:null;
-      state.candyBoostUntil=Number.isFinite(s.candyBoostUntil)&&s.candyBoostUntil>=0?s.candyBoostUntil:0;
+      state.TVBoostUntil=Number.isFinite(s.TVBoostUntil)&&s.TVBoostUntil>=0?s.TVBoostUntil:0;
       state.announcement=typeof s.announcement==="string"?s.announcement.slice(0,120):"";
     }catch(e){}
   }
   function validate(){
-    const fields=["candy","total","clickPower","auto","multiplier"];
+    const fields=["TV","total","clickPower","auto","multiplier"];
     for(const key of fields){
       if(!safeInt(state[key])) state[key]=0;
     }
@@ -311,19 +393,19 @@ footer{text-align:center;color:#9f91ae;font-size:.8rem;margin:18px 0}
     return true;
   }
   function eventFactor(){const random=state.activeRandomEvent&&Date.now()<state.activeRandomEvent.endsAt?Math.max(10,state.activeRandomEvent.multiplier):1;const global=state.globalEvent&&Date.now()<state.globalEvent.endsAt?state.globalEvent.multiplier:1;return random*global;}
-  function renderAnnouncement(){const banner=$("announcementBanner");const message=state.announcement||"";banner.textContent=message?"📢 JAYZ ANNOUNCEMENT: "+message:"";banner.style.display=message?"block":"none";}
-  function clickCandy(){
+  function renderAnnouncement(){const banner=$("announcementBanner");const message=state.announcement||"";banner.textContent=message?"📢 TVCLICKER ANNOUNCEMENT: "+message:"";banner.style.display=message?"block":"none";}
+  function clickTV(){
     const gain=state.clickPower*state.multiplier*eventFactor();
-    if(!safeInt(gain)||!safeInt(state.candy+gain))return;
-    state.candy+=gain;state.total+=gain;render();save();
+    if(!safeInt(gain)||!safeInt(state.TV+gain))return;
+    state.TV+=gain;state.total+=gain;render();save();
   }
   function price(item,index){return Math.floor(item.base*Math.pow(1.65,state.owned[index]));}
   function rebirthCost(){return Math.floor(2000000000000000*Math.pow(2,state.rebirths));}
   function doRebirth(){
     const cost=rebirthCost();
-    if(state.candy<cost)return;
-    if(!confirm("Rebirth now? Your candy and shop upgrades reset, but your permanent multiplier doubles!"))return;
-    state.candy=0;
+    if(state.TV<cost)return;
+    if(!confirm("Rebirth now? Your TV and shop upgrades reset, but your permanent multiplier doubles!"))return;
+    state.TV=0;
     state.clickPower=1;
     state.auto=0;
     state.owned=Array(items.length).fill(0);
@@ -341,8 +423,8 @@ footer{text-align:center;color:#9f91ae;font-size:.8rem;margin:18px 0}
   }
   function buy(index){
     const item=items[index],cost=price(item,index);
-    if(!safeInt(cost)||state.candy<cost)return;
-    state.candy-=cost;state.owned[index]++;
+    if(!safeInt(cost)||state.TV<cost)return;
+    state.TV-=cost;state.owned[index]++;
     if(item.kind==="click")state.clickPower+=item.amount;
     if(item.kind==="auto")state.auto+=item.amount;
     if(item.kind==="mult")state.multiplier*=item.amount;
@@ -358,8 +440,8 @@ footer{text-align:center;color:#9f91ae;font-size:.8rem;margin:18px 0}
       const p=document.createElement("p");p.textContent=item.desc;
       const owned=document.createElement("div");owned.className="small";owned.textContent="Owned: "+state.owned[i];
       const foot=document.createElement("div");foot.className="item-footer";
-      const priceEl=document.createElement("span");priceEl.className="price";priceEl.textContent=formatNumber(cost)+" 🍬";
-      const btn=document.createElement("button");btn.className="action";btn.textContent="BUY";btn.disabled=state.candy<cost;btn.addEventListener("click",()=>buy(i));
+      const priceEl=document.createElement("span");priceEl.className="price";priceEl.textContent=formatNumber(cost)+" 📺";
+      const btn=document.createElement("button");btn.className="action";btn.textContent="BUY";btn.disabled=state.TV<cost;btn.addEventListener("click",()=>buy(i));
       foot.append(priceEl,btn);card.append(h,p,owned,foot);$("shopItems").append(card);
     });
   }
@@ -368,14 +450,14 @@ footer{text-align:center;color:#9f91ae;font-size:.8rem;margin:18px 0}
     state.codes.forEach((entry,i)=>{
       const row=document.createElement("div");row.className="code-row";
       const info=document.createElement("div");const strong=document.createElement("strong");strong.textContent=entry.code;
-      const small=document.createElement("div");small.className="small";small.textContent=formatNumber(entry.reward)+" candies";
+      const small=document.createElement("div");small.className="small";small.textContent=formatNumber(entry.reward)+" TVs";
       info.append(strong,small);
       const del=document.createElement("button");del.className="action";del.textContent="Delete";
       del.addEventListener("click",()=>{state.codes.splice(i,1);state.redeemed=state.redeemed.filter(x=>x!==entry.code);renderCodes();save();});
       row.append(info,del);$("codeList").append(row);
     });
   }
-  function renderCandyEvent(){
+  function renderTVEvent(){
     const now=Date.now();
     if(state.activeRandomEvent&&now>=state.activeRandomEvent.endsAt){state.activeRandomEvent=null;save();}
     if(now>=state.nextEventRoll){
@@ -386,27 +468,27 @@ footer{text-align:center;color:#9f91ae;font-size:.8rem;margin:18px 0}
       if(event){state.activeRandomEvent=event;state.announcement="";}
       state.nextEventRoll=now+600000;save();
     }
-    const status=$("candyEventStatus"),timer=$("candyEventTimer");
+    const status=$("TVEventStatus"),timer=$("TVEventTimer");
     if(state.globalEvent&&now>=state.globalEvent.endsAt){state.globalEvent=null;save();}
     const active=state.globalEvent||(state.activeRandomEvent&&now<state.activeRandomEvent.endsAt?state.activeRandomEvent:null);
     if(active){
       const left=Math.max(0,Math.ceil((active.endsAt-now)/1000));
-      status.textContent=(active.name==="Thanksgiving Eating"?"🦃":"🎃")+" "+active.name+" IS HERE! All candy earnings are x"+Math.max(10,active.multiplier)+"!";
-      timer.textContent="x"+Math.max(10,active.multiplier)+" CANDY ACTIVE — "+String(Math.floor(left/60)).padStart(2,"0")+":"+String(left%60).padStart(2,"0")+" left";
+      status.textContent=(active.name==="Thanksgiving Eating"?"🦃":"🎃")+" "+active.name+" IS HERE! All TV earnings are x"+Math.max(10,active.multiplier)+"!";
+      timer.textContent="x"+Math.max(10,active.multiplier)+" TV ACTIVE — "+String(Math.floor(left/60)).padStart(2,"0")+":"+String(left%60).padStart(2,"0")+" left";
       status.style.color="#16834a";
     }else{
       const left=Math.max(0,Math.ceil((state.nextEventRoll-now)/1000));
-      status.textContent="🦃 Thanksgiving Eating: 30% chance • 🎃 Trick-or-Treat: 10% chance. Both give x10 candy.";
+      status.textContent="🦃 Thanksgiving Eating: 30% chance • 🎃 Trick-or-Treat: 10% chance. Both give x10 TV.";
       timer.textContent="Next random event check in "+String(Math.floor(left/60)).padStart(2,"0")+":"+String(left%60).padStart(2,"0");
       status.style.color="";
     }
     renderAnnouncement();
   }
   const achievementDefs=[
-    {id:"first-candy",icon:"🍬",name:"First Sweet",desc:"Earn your first 100 candy.",test:()=>state.total>=100},
-    {id:"collector",icon:"🧺",name:"Candy Collector",desc:"Earn 10,000 candy in total.",test:()=>state.total>=10000},
-    {id:"millionaire",icon:"💎",name:"Candy Millionaire",desc:"Earn 1,000,000 candy in total.",test:()=>state.total>=1000000},
-    {id:"billionaire",icon:"👑",name:"Candy Billionaire",desc:"Earn 1 billion candy in total.",test:()=>state.total>=1000000000},
+    {id:"first-TV",icon:"📺",name:"First Sweet",desc:"Earn your first 100 TV.",test:()=>state.total>=100},
+    {id:"collector",icon:"🧺",name:"TV Collector",desc:"Earn 10,000 TV in total.",test:()=>state.total>=10000},
+    {id:"millionaire",icon:"💎",name:"TV Millionaire",desc:"Earn 1,000,000 TV in total.",test:()=>state.total>=1000000},
+    {id:"billionaire",icon:"👑",name:"TV Billionaire",desc:"Earn 1 billion TV in total.",test:()=>state.total>=1000000000},
     {id:"upgrade-one",icon:"🛒",name:"Shopper",desc:"Buy your first upgrade.",test:()=>state.owned.reduce((a,b)=>a+b,0)>=1},
     {id:"upgrade-ten",icon:"🏭",name:"Upgrade Expert",desc:"Own 10 upgrades at once.",test:()=>state.owned.reduce((a,b)=>a+b,0)>=10},
     {id:"code-redeemer",icon:"🎁",name:"Code Cracker",desc:"Redeem your first code.",test:()=>state.redeemed.length>=1},
@@ -436,9 +518,9 @@ footer{text-align:center;color:#9f91ae;font-size:.8rem;margin:18px 0}
     }
   }
   function render(){
-    renderCandyEvent();
+    renderTVEvent();
     checkAchievements();
-    $("candy").textContent=formatNumber(Math.floor(state.candy))+" 🍬";
+    $("TV").textContent=formatNumber(Math.floor(state.TV))+" 📺";
     $("perClick").textContent="+"+formatNumber(state.clickPower*state.multiplier)+" per click";
     $("perSecond").textContent=formatNumber(state.auto)+" per second";
     $("total").textContent=formatNumber(state.total);
@@ -450,13 +532,13 @@ footer{text-align:center;color:#9f91ae;font-size:.8rem;margin:18px 0}
     $("statCodes").textContent=state.redeemed.length;
     $("statRebirths").textContent=state.rebirths;
     const rc=rebirthCost();
-    $("rebirthCost").textContent=formatNumber(rc)+" 🍬";
-    $("rebirthButton").disabled=state.candy<rc;
-    $("rebirthButton").textContent=state.candy>=rc?"🌟 REBIRTH NOW — PERMANENT x2 BONUS":"REBIRTH — NEED "+formatNumber(Math.max(0,rc-state.candy))+" MORE";
+    $("rebirthCost").textContent=formatNumber(rc)+" 📺";
+    $("rebirthButton").disabled=state.TV<rc;
+    $("rebirthButton").textContent=state.TV>=rc?"🌟 REBIRTH NOW — PERMANENT x2 BONUS":"REBIRTH — NEED "+formatNumber(Math.max(0,rc-state.TV))+" MORE";
     $("rebirthInfo").textContent="Rebirths: "+state.rebirths+" • Permanent bonus: x"+formatNumber(state.multiplier);
     renderShop();renderCodes();
   }
-  $("candyButton").addEventListener("click",clickCandy);
+  $("TVButton").addEventListener("click",clickTV);
   $("rebirthButton").addEventListener("click",doRebirth);
   document.querySelectorAll(".tab").forEach(btn=>btn.addEventListener("click",()=>{
     document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b===btn));
@@ -470,11 +552,11 @@ footer{text-align:center;color:#9f91ae;font-size:.8rem;margin:18px 0}
     if(state.redeemed.includes(entered)){msg.textContent="That code has already been used.";msg.classList.add("error");return;}
     if(!found){msg.textContent="Invalid code. Try again.";msg.classList.add("error");return;}
     if(!safeInt(found.reward)||found.reward<=0){msg.textContent="That code has an invalid reward.";msg.classList.add("error");return;}
-    if(!safeInt(state.candy+found.reward)){msg.textContent="That reward is too large.";msg.classList.add("error");return;}
+    if(!safeInt(state.TV+found.reward)){msg.textContent="That reward is too large.";msg.classList.add("error");return;}
     const reward=found.reward*eventFactor();
-    if(!safeInt(reward)||!safeInt(state.candy+reward)){msg.textContent="That reward is too large.";msg.classList.add("error");return;}
-    state.candy+=reward;state.total+=reward;state.redeemed.push(entered);
-    $("redeemInput").value="";msg.textContent="Success! You received "+formatNumber(reward)+" candies! 🎉";msg.classList.add("success");
+    if(!safeInt(reward)||!safeInt(state.TV+reward)){msg.textContent="That reward is too large.";msg.classList.add("error");return;}
+    state.TV+=reward;state.total+=reward;state.redeemed.push(entered);
+    $("redeemInput").value="";msg.textContent="Success! You received "+formatNumber(reward)+" TVs! 🎉";msg.classList.add("success");
     render();save();
   });
   let adminUnlocked = false;
@@ -489,108 +571,131 @@ footer{text-align:center;color:#9f91ae;font-size:.8rem;margin:18px 0}
     state.codes.push({code,reward});$("newCode").value="";msg.textContent="Code "+code+" created! 🎉";msg.classList.add("success");renderCodes();save();
   });
 
-  const ADMIN_PIN = "Jayz22";
+  // Admin code is verified by the Supabase Edge Function; never hardcode it here.
   function updateAdminStats(){
-    $("adminCandy").textContent=formatNumber(state.candy)+" 🍬";
+    $("adminTV").textContent=formatNumber(state.TV)+" 📺";
     $("adminTotal").textContent=formatNumber(state.total);
     $("adminUpgrades").textContent=formatNumber(state.owned.reduce((a,b)=>a+b,0));
     $("adminRebirths").textContent=formatNumber(state.rebirths);
     $("adminCodes").textContent=formatNumber(state.redeemed.length);
   }
-  $("adminUnlock").addEventListener("click",()=>{
-    const pin=$("adminPin").value;
+  $("adminUnlock").addEventListener("click",async()=>{
+    const pin=$("adminPin").value.trim();
     const msg=$("adminMessage");
-    if(pin===ADMIN_PIN){
-      adminUnlocked = true;
+    if(!pin){msg.textContent="Enter the owner admin code.";return;}
+    try{
+      if(!sb)throw new Error("Connect Supabase first. Check supabase-config.js and reload.");
+      const {data,error}=await sb.functions.invoke("admin",{body:{action:"unlock",code:pin}});
+      if(error||!data?.success)throw new Error(data?.error||error?.message||"Incorrect admin code.");
+      adminCode=pin; adminUnlocked=true;
       $("ownerCodeTools").style.display="block";
       $("adminDashboard").style.display="block";
-      msg.textContent="Owner panel unlocked on this browser.";
+      msg.textContent="Owner panel unlocked. Admin actions are verified by the server.";
       updateAdminStats();updateGlobalEventAdmin();
-    }else{
-      msg.textContent="Incorrect PIN.";
-    }
+    }catch(error){adminCode="";adminUnlocked=false;msg.textContent=error.message||"Admin verification failed.";}
     $("adminPin").value="";
   });
   $("adminGive").addEventListener("click",()=>{
     const amount=Number($("adminGrant").value);
     if(!Number.isSafeInteger(amount)||amount<1||amount>1000000000){$("adminMessage").textContent="Enter an amount from 1 to 1,000,000,000.";return;}
-    if(!safeInt(state.candy+amount)||!safeInt(state.total+amount)){ $("adminMessage").textContent="That amount is too large.";return;}
-    state.candy+=amount;state.total+=amount;render();save();updateAdminStats();
-    $("adminMessage").textContent="Added "+formatNumber(amount)+" candy to this browser's game.";
+    if(!safeInt(state.TV+amount)||!safeInt(state.total+amount)){ $("adminMessage").textContent="That amount is too large.";return;}
+    state.TV+=amount;state.total+=amount;render();save();updateAdminStats();
+    $("adminMessage").textContent="Added "+formatNumber(amount)+" TV to this browser's game.";
   });
   $("adminSet").addEventListener("click",()=>{
     const amount=Number($("adminSetBalance").value);
     if(!Number.isSafeInteger(amount)||amount<0){$("adminMessage").textContent="Enter a whole-number balance from 0 to 9,007,199,254,740,991.";return;}
-    state.candy=amount;render();save();updateAdminStats();
-    $("adminMessage").textContent="Candy balance set to "+formatNumber(amount)+".";
+    state.TV=amount;render();save();updateAdminStats();
+    $("adminMessage").textContent="TV balance set to "+formatNumber(amount)+".";
   });
   $("adminTakeButton").addEventListener("click",()=>{
     const amount=Number($("adminTake").value);
     if(!Number.isSafeInteger(amount)||amount<1){$("adminMessage").textContent="Enter a whole number greater than zero.";return;}
-    const removed=Math.min(amount,state.candy);state.candy-=removed;render();save();updateAdminStats();
-    $("adminMessage").textContent="Removed "+formatNumber(removed)+" candy.";
+    const removed=Math.min(amount,state.TV);state.TV-=removed;render();save();updateAdminStats();
+    $("adminMessage").textContent="Removed "+formatNumber(removed)+" TV.";
   });
-  $("adminAnnounce").addEventListener("click",()=>{
+  $("adminAnnounce").addEventListener("click",async()=>{
     const message=$("adminAnnouncement").value.trim();
     if(!message){$("adminMessage").textContent="Type an announcement first.";return;}
-    state.announcement=message.slice(0,120);save();renderAnnouncement();
-    $("adminAnnouncementStatus").textContent="Announcement saved and showing in this browser.";
-    $("adminMessage").textContent="Announcement posted.";
+    try{
+      await adminRequest("set_announcement",{message:message.slice(0,120)});
+      await refreshGlobalState();
+      $("adminAnnouncementStatus").textContent="Announcement posted globally for all connected players.";
+      $("adminMessage").textContent="Global announcement posted.";
+    }catch(error){$("adminMessage").textContent=error.message;}
   });
-  $("adminClearAnnouncement").addEventListener("click",()=>{
-    state.announcement="";save();renderAnnouncement();
-    $("adminAnnouncementStatus").textContent="No announcement posted.";
-    $("adminMessage").textContent="Announcement cleared.";
+  $("adminClearAnnouncement").addEventListener("click",async()=>{
+    try{
+      await adminRequest("clear_announcement");
+      await refreshGlobalState();
+      $("adminAnnouncementStatus").textContent="No global announcement posted.";
+      $("adminMessage").textContent="Global announcement cleared.";
+    }catch(error){$("adminMessage").textContent=error.message;}
   });
   $("adminBackup").addEventListener("click",()=>{
     const data=JSON.stringify(state,null,2);
     const blob=new Blob([data],{type:"application/json"});
     const url=URL.createObjectURL(blob);const a=document.createElement("a");
-    a.href=url;a.download="jayz-candy-clicker-save-backup.json";a.click();URL.revokeObjectURL(url);
+    a.href=url;a.download="TvClicker-save-backup.json";a.click();URL.revokeObjectURL(url);
     $("adminMessage").textContent="Save backup download started.";
   });
   $("adminReset").addEventListener("click",()=>{
-    if(!confirm("Reset ALL Jayz Candy Clicker progress saved in this browser? This cannot be undone."))return;
+    if(!confirm("Reset ALL TvClicker TV Clicker progress saved in this browser? This cannot be undone."))return;
     localStorage.removeItem(SAVE_KEY);location.reload();
   });
   $("adminRefresh").addEventListener("click",updateAdminStats);
   $("adminLock").addEventListener("click",()=>{
-    adminUnlocked = false;
+    adminUnlocked=false; adminCode="";
     $("ownerCodeTools").style.display="none";
     $("adminDashboard").style.display="none";
-    $("adminMessage").textContent="Panel locked.";
+    $("adminMessage").textContent="Panel locked. Enter the server-verified admin code to unlock again.";
   });
 
   function updateGlobalEventAdmin(){
     const active=state.globalEvent&&Date.now()<state.globalEvent.endsAt;
-    $("globalEventStatus").textContent=active?"RUNNING: "+state.globalEvent.name+" • x"+state.globalEvent.multiplier+" candy • ends "+new Date(state.globalEvent.endsAt).toLocaleTimeString():"No global event is running.";
+    $("globalEventStatus").textContent=active?"RUNNING: "+state.globalEvent.name+" • x"+state.globalEvent.multiplier+" TV • ends "+new Date(state.globalEvent.endsAt).toLocaleTimeString():"No global event is running.";
   }
-  $("startGlobalEvent").addEventListener("click",()=>{
-    const name=$("globalEventName").value.trim()||"Jayz Mega Candy Party";
+  $("startGlobalEvent").addEventListener("click",async()=>{
+    const name=$("globalEventName").value.trim()||"TV Station Takeover";
     const minutes=Number($("globalEventMinutes").value);let multiplier=Number($("globalEventMultiplier").value);
     if(name==="Thanksgiving Eating"||name==="Trick-or-Treat")multiplier=Math.max(10,multiplier);
     if(!Number.isInteger(minutes)||minutes<1||minutes>60||!Number.isInteger(multiplier)||multiplier<1||multiplier>10){$("adminMessage").textContent="Choose 1–60 minutes and a 1–10 multiplier (Thanksgiving and Trick-or-Treat are always at least x10).";return;}
-    state.globalEvent={name,multiplier,endsAt:Date.now()+minutes*60000};
-    save();render();updateGlobalEventAdmin();updateAdminStats();
-    $("adminMessage").textContent="Global event started in this browser!";
+    try{
+      await adminRequest("start_event",{name,minutes,multiplier});
+      await refreshGlobalState();updateGlobalEventAdmin();updateAdminStats();
+      $("adminMessage").textContent="Global event started for all players!";
+    }catch(error){$("adminMessage").textContent=error.message;}
   });
-  $("stopGlobalEvent").addEventListener("click",()=>{
-    state.globalEvent=null;save();render();updateGlobalEventAdmin();
-    $("adminMessage").textContent="Global event stopped.";
+  $("stopGlobalEvent").addEventListener("click",async()=>{
+    try{
+      await adminRequest("stop_event");
+      await refreshGlobalState();updateGlobalEventAdmin();
+      $("adminMessage").textContent="Global event stopped for all players.";
+    }catch(error){$("adminMessage").textContent=error.message;}
   });
   load();
   if(!validate())return;
   render();
-  $("adminAnnouncementStatus").textContent=state.announcement?"Announcement is saved and showing.":"No announcement posted.";
+  $("adminAnnouncementStatus").textContent=state.announcement?"Global announcement is showing.":"No global announcement posted.";
   window.addEventListener("storage",event=>{if(event.key===SAVE_KEY){load();render();}});
+  initSupabase();
   setInterval(()=>{
-    renderCandyEvent();
+    renderTVEvent();
     if(state.auto<=0)return;
     const gain=state.auto*eventFactor();
-    if(!safeInt(gain)||!safeInt(state.candy+gain))return;
-    state.candy+=gain;state.total+=gain;render();save();
+    if(!safeInt(gain)||!safeInt(state.TV+gain))return;
+    state.TV+=gain;state.total+=gain;render();save();
   },1000);
 })();
 </script>
 </body>
 </html>
+<style>
+/* Retro television click target */
+#TVButton{width:clamp(230px,34vw,290px);height:clamp(190px,27vw,230px);border:10px solid #252a35;border-radius:28px;background:linear-gradient(145deg,#687386,#313b4b 60%,#202733);box-shadow:inset 0 0 0 3px #aab4c5,inset 0 0 0 8px #303948,0 10px 0 #111722,0 16px 28px #0009;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;position:relative}
+#TVButton::before{content:"";position:absolute;inset:12px 48px 28px 16px;border-radius:16px;background:linear-gradient(145deg,#8ee5ff,#397fc1 58%,#142c58);border:5px solid #151d2a;box-shadow:inset 0 0 20px #d5f7ff88,0 0 12px #55caff55;z-index:0}
+#TVButton::after{content:"●\A\A●";white-space:pre;position:absolute;right:14px;top:45%;font-size:10px;line-height:24px;color:#f3d58a;text-shadow:0 0 5px #ffe6a5;z-index:2}
+.TV-icon{font-size:clamp(5rem,12vw,7rem);line-height:1;z-index:1;filter:drop-shadow(0 4px 3px #071326aa)}
+#TVButton .ball-label{z-index:1;color:#fff;font-weight:1000;text-shadow:0 2px 5px #071326;letter-spacing:2px}
+#TVButton:active{transform:translateY(5px) scale(.985);box-shadow:inset 0 0 0 3px #aab4c5,inset 0 0 0 8px #303948,0 3px 0 #111722,0 7px 12px #0008}
+</style>
