@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Jayz Candy Clicker</title>
+<style>
+:root{--bg:#100b1d;--panel:#211536;--panel2:#2b1b42;--pink:#f04b9b;--gold:#ffd86b;--text:#fff;--muted:#c9badb;--green:#70e0a0;--red:#ff7777}
+*{box-sizing:border-box}
+html,body{touch-action:manipulation}
+button,input,select,textarea{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:linear-gradient(180deg,#ead7ff 0%,#c9a7f5 52%,#a77be8 100%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh;padding:24px}
+button,input{font:inherit}
+.wrap{max-width:920px;margin:auto}
+header{text-align:center;margin-bottom:18px}
+h1{font-size:clamp(2rem,6vw,3.5rem);margin:0;color:var(--gold);text-shadow:0 4px 24px #f04b9b66}
+header p{color:var(--muted);margin:8px 0}
+.layout{display:grid;grid-template-columns:1fr;gap:16px}
+.panel{background:#211536eF;border:1px solid #62457d;border-radius:20px;padding:18px;box-shadow:0 16px 40px #0005}
+.balance{text-align:center;background:linear-gradient(145deg,#39205a,#211536);padding:24px}
+.balance-number{font-size:clamp(2.2rem,8vw,4rem);font-weight:900;color:var(--gold);margin:4px}
+.statsline{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;color:var(--muted)}
+#candyButton{display:block;width:clamp(180px,30vw,250px);height:clamp(180px,30vw,250px);margin:28px auto 14px;border:2px solid #ffb5b5;border-radius:50%;padding:0;background:radial-gradient(ellipse at 28% 20%,#fff1f1 0%,#ff9a9a 8%,#ff4848 28%,#ed101f 54%,#b90020 76%,#690014 100%);color:white;font-size:1rem;font-weight:900;cursor:pointer;box-shadow:inset -18px -24px 28px #57000e99,inset 10px 12px 20px #ffffff66,0 7px 0 #760018,0 12px 24px #0008,0 0 35px #ff263b44;transition:filter .12s ease;position:relative;overflow:hidden;isolation:isolate;touch-action:manipulation}
+#candyButton::before{content:"";position:absolute;width:35%;height:17%;left:18%;top:13%;border-radius:50%;background:linear-gradient(180deg,#ffffffdd,#ffffff08);filter:blur(2px);transform:rotate(-32deg);z-index:-1}
+#candyButton::after{content:"";position:absolute;inset:7%;border-radius:50%;border:1px solid #ffffff55;box-shadow:inset 2px 3px 7px #ffffff33;pointer-events:none}
+#candyButton:hover{filter:brightness(1.08)}
+#candyButton:active{filter:brightness(.98);box-shadow:inset -18px -24px 28px #57000e99,inset 10px 12px 20px #ffffff66,0 2px 0 #760018,0 5px 12px #0007}
+#candyButton:focus-visible{outline:4px solid #ffcfdf;outline-offset:7px}
+.candy-icon{font-size:clamp(3.3rem,8vw,4.6rem);display:block;position:relative;z-index:1;filter:drop-shadow(0 3px 3px #79001699)}
+.ball-label{display:block;position:relative;z-index:1;font-size:.85rem;letter-spacing:1.4px;text-shadow:0 2px 3px #740014}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.tab{flex:1;min-width:110px;border:1px solid #694d82;background:#302044;color:white;padding:11px;border-radius:12px;cursor:pointer;font-weight:750}
+.tab.active{background:var(--pink);border-color:var(--pink)}
+.section{display:none}.section.active{display:block}
+h2{margin:0 0 12px}
+.shop-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.achievement{background:var(--panel2);border:1px solid #60477a;border-radius:14px;padding:13px;display:flex;gap:12px;align-items:center}.achievement.locked{opacity:.55;filter:grayscale(.65)}.achievement .medal{font-size:1.8rem}.achievement strong{display:block}.achievement p{margin:3px 0 0;color:var(--muted);font-size:.84rem}.achievement.unlocked{border-color:#b78aff;box-shadow:0 0 16px #b78aff22}
+.item{background:var(--panel2);border:1px solid #60477a;border-radius:15px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.item h3{margin:0;font-size:1.05rem}
+.item p{margin:0;color:var(--muted);font-size:.9rem;min-height:38px}
+.item-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto}
+.price{font-weight:850;color:var(--gold)}
+button.action{border:0;border-radius:10px;background:var(--pink);color:white;font-weight:800;padding:10px 14px;cursor:pointer}
+button.action:disabled{opacity:.4;cursor:not-allowed}
+input{width:100%;background:#140d20;color:white;border:1px solid #72578c;border-radius:10px;padding:12px;margin:6px 0 10px}
+label{display:block;color:var(--muted);font-size:.9rem;margin-top:8px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.row>*{flex:1}
+.notice{padding:11px;border-radius:10px;background:#352447;color:var(--muted);margin:10px 0}
+.success{color:var(--green)}.error{color:var(--red)}
+.code-row,.stat-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid #4b365f}
+.code-row:last-child,.stat-row:last-child{border:0}
+.small{font-size:.82rem;color:var(--muted)}
+.security{display:flex;align-items:center;gap:10px;background:#173a2b;border:1px solid #397a58;border-radius:12px;padding:12px;margin-bottom:12px}
+.danger{background:#632039!important}
+footer{text-align:center;color:#9f91ae;font-size:.8rem;margin:18px 0}
+@media(min-width:760px){.layout{grid-template-columns:1fr 1.2fr}.balance{align-self:start;position:sticky;top:20px}}
+
+#rebirthScare{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;flex-direction:column;text-align:center;background:radial-gradient(circle,#4b075d 0%,#120018 55%,#000 100%);color:#fff;padding:24px}
+#rebirthScare.show{display:flex;animation:scareFlash .18s steps(2,end) 5}
+#rebirthScare .scare-face{font-size:clamp(7rem,28vw,16rem);line-height:1;filter:drop-shadow(0 0 28px #ff174f);animation:scarePop .35s ease-out}
+#rebirthScare .scare-title{font-size:clamp(2rem,8vw,4rem);font-weight:1000;letter-spacing:3px;color:#ff315d;text-shadow:0 0 20px #ff174f}
+#rebirthScare .scare-sub{font-size:1rem;color:#f4d9ff;margin-top:8px}
+@keyframes scareFlash{50%{background:#5c001c}}
+@keyframes scarePop{from{transform:scale(.15) rotate(-12deg);opacity:.2}to{transform:scale(1) rotate(0);opacity:1}}
+@media(prefers-reduced-motion:reduce){#rebirthScare.show{animation:none}#rebirthScare .scare-face{animation:none}}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><h1>🍬 JAYZ CANDY CLICKER</h1><p>Click candy, build your empire, and unlock bigger upgrades!</p></header>
+<div id="game">
+<div id="announcementBanner" class="notice" style="display:none;text-align:center;font-weight:800;background:#4a2469;border:1px solid #b78aff"></div>
+<div class="layout">
+  <section class="panel balance">
+    <div style="font-size:1.1rem">YOUR CANDY BALANCE</div>
+    <div class="balance-number" id="candy">0 🍬</div>
+    <div class="statsline"><span id="perClick">+1 per click</span><span id="perSecond">0 per second</span></div>
+    <button id="candyButton" aria-label="Tap the red candy ball to earn candy"><span class="candy-icon">🍬</span><span class="ball-label">TAP ME!</span></button>
+    <div class="notice" style="margin-top:14px;text-align:left">
+      <h2 style="margin:0 0 6px">🎉 Random Candy Events</h2>
+      <p id="candyEventStatus" class="small">Thanksgiving Eating: 30% chance • Trick-or-Treat: 10% chance. Events are checked every 10 minutes.</p>
+      <strong id="candyEventTimer">Next random event check in 10:00</strong>
+    </div>
+    <p class="small">Total earned: <strong id="total">0</strong></p>
+    <div class="notice" style="text-align:left;margin-top:18px">
+      <h2 style="margin:0 0 6px">🌟 Rebirth</h2>
+      <p class="small">Reset your candy and shop upgrades to earn a permanent x2 multiplier. Rebirth is the most expensive upgrade in the game!</p>
+      <div class="statsline" style="justify-content:space-between"><span>Rebirth cost:</span><strong id="rebirthCost">2,000,000,000,000,000 🍬</strong></div>
+      <button class="action" id="rebirthButton" style="width:100%;margin-top:10px" disabled>REBIRTH — NEED MORE CANDY</button>
+      <p class="small" id="rebirthInfo">Rebirths: 0 • Permanent bonus: x1</p>
+    </div>
+  </section>
+  <section class="panel">
+    <nav class="tabs">
+      <button class="tab active" data-tab="shop">🛒 Shop</button>
+      <button class="tab" data-tab="codes">🎁 Codes</button>
+      <button class="tab" data-tab="stats">📊 Stats</button>
+      <button class="tab" data-tab="achievements">🏆 Achievements</button>
+      <button class="tab" data-tab="security">🛡️ Security</button>
+      <button class="tab" data-tab="admin">🔐 Admin</button>
+    </nav>
+    <div class="section active" id="shop">
+      <h2>🛒 Upgrade Shop</h2><div class="shop-grid" id="shopItems"></div>
+    </div>
+    <section class="notice" id="usdCandyShop" style="margin-top:20px;text-align:left">
+      <h2 style="margin:0 0 6px">💵 Candy Shop</h2>
+      <p class="small">Choose a candy pack. These are demo prices only — checkout is not connected and no payment will be taken.</p>
+      <div class="shop-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px">
+        <div class="shop-item"><strong>🍬 Starter Pack</strong><p class="small">1,000 candies</p><strong>$0.99 USD</strong><button class="action" type="button" disabled>Checkout coming soon</button></div>
+        <div class="shop-item"><strong>🍭 Sweet Pack</strong><p class="small">10,000 candies</p><strong>$4.99 USD</strong><button class="action" type="button" disabled>Checkout coming soon</button></div>
+        <div class="shop-item"><strong>🎁 Mega Pack</strong><p class="small">100,000 candies</p><strong>$9.99 USD</strong><button class="action" type="button" disabled>Checkout coming soon</button></div>
+        <div class="shop-item"><strong>👑 Jayz VIP Pack</strong><p class="small">1,000,000 candies</p><strong>$19.99 USD</strong><button class="action" type="button" disabled>Checkout coming soon</button></div>
+      </div>
+      <p class="small" style="margin-bottom:0">Real-money purchases require a secure payment provider and server-side verification. Ask a parent or guardian before any purchase.</p>
+    </section>
+
+<div class="section" id="codes">
+      <h2>🎁 Redeem a Code</h2>
+      <label for="redeemInput">Enter your code</label><input id="redeemInput" placeholder="Example: JAYZ" maxlength="32">
+      <button class="action" id="redeemButton">REDEEM CODE</button><div id="codeMessage" class="notice" aria-live="polite">Try a code to get bonus candy!</div>
+      <div id="ownerCodeTools" style="display:none;border:1px solid #8b5cf6;border-radius:14px;padding:16px;margin-top:20px">
+      <hr style="border-color:#4b365f;margin:0 0 20px">
+      <h2>👑 Owner Only: Create Codes</h2>
+      <p class="small">Only available while your owner admin panel is unlocked.</p>
+      <label for="newCode">Code name</label><input id="newCode" placeholder="Your code" maxlength="32">
+      <label for="newReward">Candy reward</label><input id="newReward" type="number" min="1" max="100000000" value="1000">
+      <button class="action" id="createCode">CREATE CODE</button>
+      <div id="codeList"></div>
+      </div>
+    </div>
+    <div class="section" id="achievements">
+      <h2>🏆 Achievements</h2>
+      <p class="small">Complete challenges to collect achievement badges. Your unlocked achievements are saved in this browser.</p>
+      <div class="notice" id="achievementNotice" aria-live="polite">Keep playing to unlock your first achievement!</div>
+      <div class="shop-grid" id="achievementList"></div>
+    </div>
+
+    <div class="section" id="stats">
+      <h2>📊 Player Statistics</h2>
+      <div class="stat-row"><span>Total candy earned</span><strong id="statTotal">0</strong></div>
+      <div class="stat-row"><span>Click power</span><strong id="statClick">1</strong></div>
+      <div class="stat-row"><span>Auto candy / second</span><strong id="statAuto">0</strong></div>
+      <div class="stat-row"><span>Multiplier</span><strong id="statMult">x1</strong></div>
+      <div class="stat-row"><span>Upgrades purchased</span><strong id="statUpgrades">0</strong></div>
+      <div class="stat-row"><span>Codes redeemed</span><strong id="statCodes">0</strong></div>
+      <div class="stat-row"><span>Rebirths</span><strong id="statRebirths">0</strong></div>
+    </div>
+
+    <div class="section" id="admin">
+      <h2>🔐 Owner Admin Panel (Local Demo)</h2>
+      <div class="notice">Local demo protection only. A PIN in a browser-only game is not secure against other people inspecting or changing the website code. For a truly private owner panel, the game needs server-side accounts and authentication.</div>
+      <div id="adminLogin">
+        <label for="adminPin">Owner PIN</label>
+        <input id="adminPin" type="password" inputmode="text" autocomplete="off" maxlength="12" placeholder="Enter owner PIN">
+        <button class="action" id="adminUnlock">SET PIN / UNLOCK</button>
+        <p id="adminMessage" class="small" aria-live="polite">Demo only: this PIN protects this browser view, not the website from code inspection.</p>
+      </div>
+      <div id="adminDashboard" style="display:none">
+        <div class="stat-row"><span>Current player candy</span><strong id="adminCandy">0</strong></div>
+        <div class="stat-row"><span>Total candy earned</span><strong id="adminTotal">0</strong></div>
+        <div class="stat-row"><span>Upgrades owned</span><strong id="adminUpgrades">0</strong></div>
+        <div class="stat-row"><span>Rebirths</span><strong id="adminRebirths">0</strong></div>
+        <div class="stat-row"><span>Redeemed codes</span><strong id="adminCodes">0</strong></div>
+        <h3>Owner tools</h3>
+        <label for="adminGrant">Give this browser candy</label>
+        <input id="adminGrant" type="number" min="1" max="1000000000" value="1000">
+        <button class="action" id="adminGive">GIVE CANDY</button>
+        <div class="row">
+          <div><label for="adminSetBalance">Set candy balance</label><input id="adminSetBalance" type="number" min="0" max="9007199254740991" placeholder="New balance"></div>
+          <div><label for="adminTake">Remove candy</label><input id="adminTake" type="number" min="1" max="9007199254740991" placeholder="Amount to remove"></div>
+        </div>
+        <button class="action" id="adminSet">SET BALANCE</button>
+        <button class="action danger" id="adminTakeButton">TAKE CANDY</button>
+        <h3>📢 Announcement</h3>
+        <p class="small">Show a message banner in this browser's game.</p>
+        <label for="adminAnnouncement">Announcement message</label>
+        <input id="adminAnnouncement" maxlength="120" placeholder="Example: Double candy event starts now!">
+        <button class="action" id="adminAnnounce">POST ANNOUNCEMENT</button>
+        <button class="action danger" id="adminClearAnnouncement">CLEAR ANNOUNCEMENT</button>
+        <div class="notice" id="adminAnnouncementStatus">No announcement posted.</div>
+        <h3>💾 Game Data</h3>
+        <button class="action" id="adminBackup">DOWNLOAD SAVE BACKUP</button>
+        <button class="action danger" id="adminReset">RESET THIS BROWSER'S GAME</button>
+        <p class="small">Reset permanently clears this browser's saved progress. Backup first if you want to keep it.</p>
+        <h3>🌍 Global Event Control</h3>
+        <p class="small">Start an event for this game/browser. A true event shared by every player needs a server.</p>
+        <label for="globalEventName">Event</label>
+        <select id="globalEventName"><option value="Thanksgiving Eating">🦃 Thanksgiving Eating (10x minimum)</option><option value="Trick-or-Treat">🎃 Trick-or-Treat (10x)</option><option value="Jayz Mega Candy Party">🍬 Jayz Mega Candy Party</option></select>
+        <div class="row">
+          <div><label for="globalEventMinutes">Duration (minutes)</label><input id="globalEventMinutes" type="number" min="1" max="60" value="5"></div>
+          <div><label for="globalEventMultiplier">Candy multiplier (1–10)</label><input id="globalEventMultiplier" type="number" min="1" max="10" value="3"></div>
+        </div>
+        <div class="notice" id="globalEventStatus">No global event is running.</div>
+        <button class="action" id="startGlobalEvent">🚀 START GLOBAL EVENT</button>
+        <button class="action danger" id="stopGlobalEvent">STOP EVENT</button>
+        <button class="action" id="adminRefresh" style="margin-left:6px">REFRESH STATS</button>
+        <button class="action danger" id="adminLock" style="margin-left:6px">LOCK PANEL</button>
+      </div>
+    </div>
+
+    <div class="section" id="security">
+      <h2>🛡️ Game Safety Checks</h2>
+      <div class="security"><span style="font-size:1.7rem">🛡️</span><div><strong>Basic value checks enabled</strong><div class="small">Invalid values are ignored; players are never banned.</div></div></div>
+      <p class="small">Your game stays playable. These checks help prevent broken candy totals and purchases without locking players out.</p>
+    </div>
+  </section>
+</div>
+</div>
+
+<div id="rebirthScare" role="alert" aria-live="assertive">
+  <div class="scare-face" aria-hidden="true">👹</div>
+  <div class="scare-title">JAYZ GOT YOU!</div>
+  <div class="scare-sub">You reached Rebirth 2... spooky!</div>
+</div>
+
+<footer>Jayz Candy Clicker • Single-file browser game • Progress saves in this browser</footer>
+</div>
+<script>
+(() => {
+  "use strict";
+  const SAVE_KEY = "jayzCandyClicker_v1";
+  const items = [
+    {name:"🍭 Sweet Gloves",desc:"+1 candy per click",base:10,kind:"click",amount:1},
+    {name:"🤖 Auto Clicker",desc:"+1 candy per second",base:50,kind:"auto",amount:1},
+    {name:"🍫 Chocolate Machine",desc:"+5 candy per click",base:150,kind:"click",amount:5},
+    {name:"✨ Candy Multiplier",desc:"Double your clicking power",base:300,kind:"mult",amount:2},
+    {name:"👑 Golden Finger",desc:"+25 candy per click",base:750,kind:"click",amount:25},
+    {name:"🏭 Candy Factory",desc:"+10 candy per second",base:1200,kind:"auto",amount:10},
+    {name:"🧁 Cupcake Crew",desc:"+50 candy per second",base:5000,kind:"auto",amount:50},
+    {name:"🍬 Candy Cannon",desc:"+100 candy per click",base:12000,kind:"click",amount:100},
+    {name:"🚀 Sugar Rocket",desc:"+500 candy per second",base:50000,kind:"auto",amount:500},
+    {name:"💎 Diamond Candy",desc:"+1,000 candy per click",base:150000,kind:"click",amount:1000},
+    {name:"🌈 Rainbow Factory",desc:"+5,000 candy per second",base:500000,kind:"auto",amount:5000},
+    {name:"👑 Candy Overlord",desc:"+10,000 candy per click",base:1500000,kind:"click",amount:10000},
+    {name:"🛸 Alien Candy Lab",desc:"+25,000 candy per second",base:5000000,kind:"auto",amount:25000},
+    {name:"⚡ Lightning Lollipop",desc:"+50,000 candy per click",base:12000000,kind:"click",amount:50000},
+    {name:"🏰 Sugar Kingdom",desc:"+100,000 candy per second",base:30000000,kind:"auto",amount:100000},
+    {name:"🔥 Firecracker Fudge",desc:"+250,000 candy per click",base:75000000,kind:"click",amount:250000},
+    {name:"🌌 Galaxy Gumball",desc:"+500,000 candy per second",base:200000000,kind:"auto",amount:500000},
+    {name:"💫 Cosmic Clicker",desc:"Double your total multiplier",base:500000000,kind:"mult",amount:2},
+    {name:"🐉 Dragon Candy Mine",desc:"+2,500,000 candy per second",base:1500000000,kind:"auto",amount:2500000},
+    {name:"☀️ Solar Sugar Tap",desc:"+5,000,000 candy per click",base:4000000000,kind:"click",amount:5000000},
+    {name:"🪐 Planet of Sweets",desc:"+25,000,000 candy per second",base:15000000000,kind:"auto",amount:25000000},
+    {name:"🏆 Infinite Candy Crown",desc:"Double your total multiplier",base:50000000000,kind:"mult",amount:2},
+    {name:"🌋 Volcano Candy Core",desc:"+50,000,000 candy per second",base:125000000000,kind:"auto",amount:50000000},
+    {name:"🧿 Mystic Sugar Eye",desc:"+100,000,000 candy per click",base:300000000000,kind:"click",amount:100000000},
+    {name:"🦾 Titan Candy Bot",desc:"+250,000,000 candy per second",base:750000000000,kind:"auto",amount:250000000},
+    {name:"🌠 Stardust Lollipop",desc:"Double your total multiplier",base:1800000000000,kind:"mult",amount:2},
+    {name:"🏙️ Candy Mega City",desc:"+1,000,000,000 candy per second",base:5000000000000,kind:"auto",amount:1000000000},
+    {name:"🌀 Quantum Candy Clicker",desc:"+2,500,000,000 candy per click",base:12500000000000,kind:"click",amount:2500000000},
+    {name:"👾 Galactic Gummy Factory",desc:"+10,000,000,000 candy per second",base:40000000000000,kind:"auto",amount:10000000000},
+    {name:"💜 Hollow Purple Pop",desc:"Triple your total multiplier",base:100000000000000,kind:"mult",amount:3},
+    {name:"🐲 Ultimate Dragon Treat",desc:"+50,000,000,000 candy per second",base:300000000000000,kind:"auto",amount:50000000000},
+    {name:"🌌 Universe Candy Engine",desc:"+100,000,000,000 candy per click",base:750000000000000,kind:"click",amount:100000000000},
+    {name:"♾️ Jayz Infinity Machine",desc:"Double your total multiplier",base:1500000000000000,kind:"mult",amount:2}
+  ];
+  const defaultCodes = [
+    {code:"JAYZ",reward:100},{code:"FREECANDY",reward:500},
+    {code:"RICH",reward:5000},{code:"UPDATE",reward:10000}
+  ];
+  let state = {
+    candy:0,total:0,clickPower:1,auto:0,multiplier:1,
+    owned:Array(items.length).fill(0),codes:defaultCodes,
+    redeemed:[],achievements:[],rebirths:0,nextEventRoll:Date.now()+600000,activeRandomEvent:null,candyBoostUntil:0,announcement:"",globalEvent:null
+  };
+  const $ = id => document.getElementById(id);
+  const safeInt = n => Number.isSafeInteger(n) && n >= 0;
+  function save(){ try{localStorage.setItem(SAVE_KEY,JSON.stringify(state));}catch(e){} }
+  function load(){
+    try{
+      const raw=localStorage.getItem(SAVE_KEY);
+      if(!raw)return;
+      const s=JSON.parse(raw);
+      if(!s || !Array.isArray(s.owned) || !Array.isArray(s.codes) || !Array.isArray(s.redeemed))return;
+      state={...state,...s};
+      state.achievements=Array.isArray(s.achievements)?s.achievements.filter(x=>typeof x==="string"):[];
+      state.owned=Array.from({length:items.length},(_,i)=>Number(s.owned[i])||0);
+      state.rebirths=Number.isSafeInteger(state.rebirths)&&state.rebirths>=0?state.rebirths:0;
+      state.nextEventRoll=Number.isFinite(s.nextEventRoll)&&s.nextEventRoll>Date.now()?s.nextEventRoll:Date.now()+600000;
+      state.activeRandomEvent=s.activeRandomEvent&&typeof s.activeRandomEvent.name==="string"&&Number.isFinite(s.activeRandomEvent.endsAt)?s.activeRandomEvent:null;
+      state.candyBoostUntil=Number.isFinite(s.candyBoostUntil)&&s.candyBoostUntil>=0?s.candyBoostUntil:0;
+      state.announcement=typeof s.announcement==="string"?s.announcement.slice(0,120):"";
+    }catch(e){}
+  }
+  function validate(){
+    const fields=["candy","total","clickPower","auto","multiplier"];
+    for(const key of fields){
+      if(!safeInt(state[key])) state[key]=0;
+    }
+    state.owned=state.owned.map(n=>safeInt(n)?n:0);
+    if(state.multiplier<1) state.multiplier=1;
+    if(state.clickPower<1) state.clickPower=1;
+    return true;
+  }
+  function eventFactor(){const random=state.activeRandomEvent&&Date.now()<state.activeRandomEvent.endsAt?Math.max(10,state.activeRandomEvent.multiplier):1;const global=state.globalEvent&&Date.now()<state.globalEvent.endsAt?state.globalEvent.multiplier:1;return random*global;}
+  function renderAnnouncement(){const banner=$("announcementBanner");const message=state.announcement||"";banner.textContent=message?"📢 JAYZ ANNOUNCEMENT: "+message:"";banner.style.display=message?"block":"none";}
+  function clickCandy(){
+    const gain=state.clickPower*state.multiplier*eventFactor();
+    if(!safeInt(gain)||!safeInt(state.candy+gain))return;
+    state.candy+=gain;state.total+=gain;render();save();
+  }
+  function price(item,index){return Math.floor(item.base*Math.pow(1.65,state.owned[index]));}
+  function rebirthCost(){return Math.floor(2000000000000000*Math.pow(2,state.rebirths));}
+  function doRebirth(){
+    const cost=rebirthCost();
+    if(state.candy<cost)return;
+    if(!confirm("Rebirth now? Your candy and shop upgrades reset, but your permanent multiplier doubles!"))return;
+    state.candy=0;
+    state.clickPower=1;
+    state.auto=0;
+    state.owned=Array(items.length).fill(0);
+    state.rebirths++;
+    state.multiplier*=2;
+    render();save();
+    alert("REBIRTH COMPLETE! Your permanent multiplier is now x"+state.multiplier.toLocaleString()+"!");
+    if(state.rebirths===2){
+      const scare=$("rebirthScare");
+      if(scare){
+        scare.classList.add("show");
+        window.setTimeout(()=>scare.classList.remove("show"),2400);
+      }
+    }
+  }
+  function buy(index){
+    const item=items[index],cost=price(item,index);
+    if(!safeInt(cost)||state.candy<cost)return;
+    state.candy-=cost;state.owned[index]++;
+    if(item.kind==="click")state.clickPower+=item.amount;
+    if(item.kind==="auto")state.auto+=item.amount;
+    if(item.kind==="mult")state.multiplier*=item.amount;
+    if(!validate())return;
+    render();save();
+  }
+  function renderShop(){
+    $("shopItems").innerHTML="";
+    items.forEach((item,i)=>{
+      const cost=price(item,i);
+      const card=document.createElement("article");card.className="item";
+      const h=document.createElement("h3");h.textContent=item.name;
+      const p=document.createElement("p");p.textContent=item.desc;
+      const owned=document.createElement("div");owned.className="small";owned.textContent="Owned: "+state.owned[i];
+      const foot=document.createElement("div");foot.className="item-footer";
+      const priceEl=document.createElement("span");priceEl.className="price";priceEl.textContent=cost.toLocaleString()+" 🍬";
+      const btn=document.createElement("button");btn.className="action";btn.textContent="BUY";btn.disabled=state.candy<cost;btn.addEventListener("click",()=>buy(i));
+      foot.append(priceEl,btn);card.append(h,p,owned,foot);$("shopItems").append(card);
+    });
+  }
+  function renderCodes(){
+    $("codeList").innerHTML="";
+    state.codes.forEach((entry,i)=>{
+      const row=document.createElement("div");row.className="code-row";
+      const info=document.createElement("div");const strong=document.createElement("strong");strong.textContent=entry.code;
+      const small=document.createElement("div");small.className="small";small.textContent=entry.reward.toLocaleString()+" candies";
+      info.append(strong,small);
+      const del=document.createElement("button");del.className="action";del.textContent="Delete";
+      del.addEventListener("click",()=>{state.codes.splice(i,1);state.redeemed=state.redeemed.filter(x=>x!==entry.code);renderCodes();save();});
+      row.append(info,del);$("codeList").append(row);
+    });
+  }
+  function renderCandyEvent(){
+    const now=Date.now();
+    if(state.activeRandomEvent&&now>=state.activeRandomEvent.endsAt){state.activeRandomEvent=null;save();}
+    if(now>=state.nextEventRoll){
+      const roll=Math.random()*100;
+      let event=null;
+      if(roll<30)event={name:"Thanksgiving Eating",multiplier:10,endsAt:now+30000};
+      else if(roll<40)event={name:"Trick-or-Treat",multiplier:10,endsAt:now+30000};
+      if(event){state.activeRandomEvent=event;state.announcement="";}
+      state.nextEventRoll=now+600000;save();
+    }
+    const status=$("candyEventStatus"),timer=$("candyEventTimer");
+    if(state.globalEvent&&now>=state.globalEvent.endsAt){state.globalEvent=null;save();}
+    const active=state.globalEvent||(state.activeRandomEvent&&now<state.activeRandomEvent.endsAt?state.activeRandomEvent:null);
+    if(active){
+      const left=Math.max(0,Math.ceil((active.endsAt-now)/1000));
+      status.textContent=(active.name==="Thanksgiving Eating"?"🦃":"🎃")+" "+active.name+" IS HERE! All candy earnings are x"+Math.max(10,active.multiplier)+"!";
+      timer.textContent="x"+Math.max(10,active.multiplier)+" CANDY ACTIVE — "+String(Math.floor(left/60)).padStart(2,"0")+":"+String(left%60).padStart(2,"0")+" left";
+      status.style.color="#16834a";
+    }else{
+      const left=Math.max(0,Math.ceil((state.nextEventRoll-now)/1000));
+      status.textContent="🦃 Thanksgiving Eating: 30% chance • 🎃 Trick-or-Treat: 10% chance. Both give x10 candy.";
+      timer.textContent="Next random event check in "+String(Math.floor(left/60)).padStart(2,"0")+":"+String(left%60).padStart(2,"0");
+      status.style.color="";
+    }
+    renderAnnouncement();
+  }
+  const achievementDefs=[
+    {id:"first-candy",icon:"🍬",name:"First Sweet",desc:"Earn your first 100 candy.",test:()=>state.total>=100},
+    {id:"collector",icon:"🧺",name:"Candy Collector",desc:"Earn 10,000 candy in total.",test:()=>state.total>=10000},
+    {id:"millionaire",icon:"💎",name:"Candy Millionaire",desc:"Earn 1,000,000 candy in total.",test:()=>state.total>=1000000},
+    {id:"billionaire",icon:"👑",name:"Candy Billionaire",desc:"Earn 1 billion candy in total.",test:()=>state.total>=1000000000},
+    {id:"upgrade-one",icon:"🛒",name:"Shopper",desc:"Buy your first upgrade.",test:()=>state.owned.reduce((a,b)=>a+b,0)>=1},
+    {id:"upgrade-ten",icon:"🏭",name:"Upgrade Expert",desc:"Own 10 upgrades at once.",test:()=>state.owned.reduce((a,b)=>a+b,0)>=10},
+    {id:"code-redeemer",icon:"🎁",name:"Code Cracker",desc:"Redeem your first code.",test:()=>state.redeemed.length>=1},
+    {id:"rebirth-one",icon:"🌟",name:"Fresh Start",desc:"Complete your first rebirth.",test:()=>state.rebirths>=1},
+    {id:"rebirth-five",icon:"🚀",name:"Rebirth Legend",desc:"Complete 5 rebirths.",test:()=>state.rebirths>=5}
+  ];
+  function renderAchievements(){
+    const list=$("achievementList");if(!list)return;
+    list.innerHTML="";
+    achievementDefs.forEach(a=>{
+      const unlocked=state.achievements.includes(a.id);
+      const card=document.createElement("article");card.className="achievement "+(unlocked?"unlocked":"locked");
+      const medal=document.createElement("span");medal.className="medal";medal.textContent=unlocked?a.icon:"🔒";
+      const info=document.createElement("div");const name=document.createElement("strong");name.textContent=a.name+(unlocked?" ✓":"");
+      const desc=document.createElement("p");desc.textContent=a.desc;info.append(name,desc);card.append(medal,info);list.append(card);
+    });
+    $("achievementNotice").textContent=state.achievements.length+" / "+achievementDefs.length+" achievements unlocked";
+  }
+  function checkAchievements(){
+    const newly=[];
+    achievementDefs.forEach(a=>{if(!state.achievements.includes(a.id)&&a.test()){state.achievements.push(a.id);newly.push(a);}});
+    renderAchievements();
+    if(newly.length){
+      const names=newly.map(a=>a.icon+" "+a.name).join(" • ");
+      $("achievementNotice").textContent="🏆 Achievement unlocked: "+names;
+      save();
+    }
+  }
+  function render(){
+    renderCandyEvent();
+    checkAchievements();
+    $("candy").textContent=Math.floor(state.candy).toLocaleString()+" 🍬";
+    $("perClick").textContent="+"+(state.clickPower*state.multiplier).toLocaleString()+" per click";
+    $("perSecond").textContent=state.auto.toLocaleString()+" per second";
+    $("total").textContent=state.total.toLocaleString();
+    $("statTotal").textContent=state.total.toLocaleString();
+    $("statClick").textContent=(state.clickPower*state.multiplier).toLocaleString();
+    $("statAuto").textContent=state.auto.toLocaleString();
+    $("statMult").textContent="x"+state.multiplier.toLocaleString();
+    $("statUpgrades").textContent=state.owned.reduce((a,b)=>a+b,0);
+    $("statCodes").textContent=state.redeemed.length;
+    $("statRebirths").textContent=state.rebirths;
+    const rc=rebirthCost();
+    $("rebirthCost").textContent=rc.toLocaleString()+" 🍬";
+    $("rebirthButton").disabled=state.candy<rc;
+    $("rebirthButton").textContent=state.candy>=rc?"🌟 REBIRTH NOW — PERMANENT x2 BONUS":"REBIRTH — NEED "+Math.max(0,rc-state.candy).toLocaleString()+" MORE";
+    $("rebirthInfo").textContent="Rebirths: "+state.rebirths+" • Permanent bonus: x"+state.multiplier.toLocaleString();
+    renderShop();renderCodes();
+  }
+  $("candyButton").addEventListener("click",clickCandy);
+  $("rebirthButton").addEventListener("click",doRebirth);
+  document.querySelectorAll(".tab").forEach(btn=>btn.addEventListener("click",()=>{
+    document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b===btn));
+    document.querySelectorAll(".section").forEach(s=>s.classList.toggle("active",s.id===btn.dataset.tab));
+  }));
+  $("redeemButton").addEventListener("click",()=>{
+    const entered=$("redeemInput").value.trim().toUpperCase();
+    const found=state.codes.find(x=>x.code===entered);
+    const msg=$("codeMessage");msg.className="notice";
+    if(!entered){msg.textContent="Enter a code first.";msg.classList.add("error");return;}
+    if(state.redeemed.includes(entered)){msg.textContent="That code has already been used.";msg.classList.add("error");return;}
+    if(!found){msg.textContent="Invalid code. Try again.";msg.classList.add("error");return;}
+    if(!safeInt(found.reward)||found.reward<=0){msg.textContent="That code has an invalid reward.";msg.classList.add("error");return;}
+    if(!safeInt(state.candy+found.reward)){msg.textContent="That reward is too large.";msg.classList.add("error");return;}
+    const reward=found.reward*eventFactor();
+    if(!safeInt(reward)||!safeInt(state.candy+reward)){msg.textContent="That reward is too large.";msg.classList.add("error");return;}
+    state.candy+=reward;state.total+=reward;state.redeemed.push(entered);
+    $("redeemInput").value="";msg.textContent="Success! You received "+reward.toLocaleString()+" candies! 🎉";msg.classList.add("success");
+    render();save();
+  });
+  let adminUnlocked = false;
+  $("createCode").addEventListener("click",()=>{
+    if(!adminUnlocked){$("codeMessage").textContent="Only the owner can create codes. Unlock the admin panel first.";return;}
+    const code=$("newCode").value.trim().toUpperCase();
+    const reward=Number($("newReward").value);
+    const msg=$("codeMessage");msg.className="notice";
+    if(!/^[A-Z0-9_-]{2,32}$/.test(code)){msg.textContent="Use 2–32 letters, numbers, hyphens, or underscores.";msg.classList.add("error");return;}
+    if(!Number.isSafeInteger(reward)||reward<1||reward>100000000){msg.textContent="Enter a reward from 1 to 100,000,000.";msg.classList.add("error");return;}
+    if(state.codes.some(x=>x.code===code)){msg.textContent="That code already exists.";msg.classList.add("error");return;}
+    state.codes.push({code,reward});$("newCode").value="";msg.textContent="Code "+code+" created! 🎉";msg.classList.add("success");renderCodes();save();
+  });
+
+  const ADMIN_PIN = "Jayz22";
+  function updateAdminStats(){
+    $("adminCandy").textContent=state.candy.toLocaleString()+" 🍬";
+    $("adminTotal").textContent=state.total.toLocaleString();
+    $("adminUpgrades").textContent=state.owned.reduce((a,b)=>a+b,0).toLocaleString();
+    $("adminRebirths").textContent=state.rebirths.toLocaleString();
+    $("adminCodes").textContent=state.redeemed.length.toLocaleString();
+  }
+  $("adminUnlock").addEventListener("click",()=>{
+    const pin=$("adminPin").value;
+    const msg=$("adminMessage");
+    if(pin===ADMIN_PIN){
+      adminUnlocked = true;
+      $("ownerCodeTools").style.display="block";
+      $("adminDashboard").style.display="block";
+      msg.textContent="Owner panel unlocked on this browser.";
+      updateAdminStats();updateGlobalEventAdmin();
+    }else{
+      msg.textContent="Incorrect PIN.";
+    }
+    $("adminPin").value="";
+  });
+  $("adminGive").addEventListener("click",()=>{
+    const amount=Number($("adminGrant").value);
+    if(!Number.isSafeInteger(amount)||amount<1||amount>1000000000){$("adminMessage").textContent="Enter an amount from 1 to 1,000,000,000.";return;}
+    if(!safeInt(state.candy+amount)||!safeInt(state.total+amount)){ $("adminMessage").textContent="That amount is too large.";return;}
+    state.candy+=amount;state.total+=amount;render();save();updateAdminStats();
+    $("adminMessage").textContent="Added "+amount.toLocaleString()+" candy to this browser's game.";
+  });
+  $("adminSet").addEventListener("click",()=>{
+    const amount=Number($("adminSetBalance").value);
+    if(!Number.isSafeInteger(amount)||amount<0){$("adminMessage").textContent="Enter a whole-number balance from 0 to 9,007,199,254,740,991.";return;}
+    state.candy=amount;render();save();updateAdminStats();
+    $("adminMessage").textContent="Candy balance set to "+amount.toLocaleString()+".";
+  });
+  $("adminTakeButton").addEventListener("click",()=>{
+    const amount=Number($("adminTake").value);
+    if(!Number.isSafeInteger(amount)||amount<1){$("adminMessage").textContent="Enter a whole number greater than zero.";return;}
+    const removed=Math.min(amount,state.candy);state.candy-=removed;render();save();updateAdminStats();
+    $("adminMessage").textContent="Removed "+removed.toLocaleString()+" candy.";
+  });
+  $("adminAnnounce").addEventListener("click",()=>{
+    const message=$("adminAnnouncement").value.trim();
+    if(!message){$("adminMessage").textContent="Type an announcement first.";return;}
+    state.announcement=message.slice(0,120);save();renderAnnouncement();
+    $("adminAnnouncementStatus").textContent="Announcement saved and showing in this browser.";
+    $("adminMessage").textContent="Announcement posted.";
+  });
+  $("adminClearAnnouncement").addEventListener("click",()=>{
+    state.announcement="";save();renderAnnouncement();
+    $("adminAnnouncementStatus").textContent="No announcement posted.";
+    $("adminMessage").textContent="Announcement cleared.";
+  });
+  $("adminBackup").addEventListener("click",()=>{
+    const data=JSON.stringify(state,null,2);
+    const blob=new Blob([data],{type:"application/json"});
+    const url=URL.createObjectURL(blob);const a=document.createElement("a");
+    a.href=url;a.download="jayz-candy-clicker-save-backup.json";a.click();URL.revokeObjectURL(url);
+    $("adminMessage").textContent="Save backup download started.";
+  });
+  $("adminReset").addEventListener("click",()=>{
+    if(!confirm("Reset ALL Jayz Candy Clicker progress saved in this browser? This cannot be undone."))return;
+    localStorage.removeItem(SAVE_KEY);location.reload();
+  });
+  $("adminRefresh").addEventListener("click",updateAdminStats);
+  $("adminLock").addEventListener("click",()=>{
+    adminUnlocked = false;
+    $("ownerCodeTools").style.display="none";
+    $("adminDashboard").style.display="none";
+    $("adminMessage").textContent="Panel locked.";
+  });
+
+  function updateGlobalEventAdmin(){
+    const active=state.globalEvent&&Date.now()<state.globalEvent.endsAt;
+    $("globalEventStatus").textContent=active?"RUNNING: "+state.globalEvent.name+" • x"+state.globalEvent.multiplier+" candy • ends "+new Date(state.globalEvent.endsAt).toLocaleTimeString():"No global event is running.";
+  }
+  $("startGlobalEvent").addEventListener("click",()=>{
+    const name=$("globalEventName").value.trim()||"Jayz Mega Candy Party";
+    const minutes=Number($("globalEventMinutes").value);let multiplier=Number($("globalEventMultiplier").value);
+    if(name==="Thanksgiving Eating"||name==="Trick-or-Treat")multiplier=Math.max(10,multiplier);
+    if(!Number.isInteger(minutes)||minutes<1||minutes>60||!Number.isInteger(multiplier)||multiplier<1||multiplier>10){$("adminMessage").textContent="Choose 1–60 minutes and a 1–10 multiplier (Thanksgiving and Trick-or-Treat are always at least x10).";return;}
+    state.globalEvent={name,multiplier,endsAt:Date.now()+minutes*60000};
+    save();render();updateGlobalEventAdmin();updateAdminStats();
+    $("adminMessage").textContent="Global event started in this browser!";
+  });
+  $("stopGlobalEvent").addEventListener("click",()=>{
+    state.globalEvent=null;save();render();updateGlobalEventAdmin();
+    $("adminMessage").textContent="Global event stopped.";
+  });
+  load();
+  if(!validate())return;
+  render();
+  $("adminAnnouncementStatus").textContent=state.announcement?"Announcement is saved and showing.":"No announcement posted.";
+  window.addEventListener("storage",event=>{if(event.key===SAVE_KEY){load();render();}});
+  setInterval(()=>{
+    renderCandyEvent();
+    if(state.auto<=0)return;
+    const gain=state.auto*eventFactor();
+    if(!safeInt(gain)||!safeInt(state.candy+gain))return;
+    state.candy+=gain;state.total+=gain;render();save();
+  },1000);
+})();
+</script>
+</body>
+</html>
