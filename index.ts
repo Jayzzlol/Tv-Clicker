@@ -22,7 +22,6 @@ Deno.serve(async (req: Request) => {
     const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const expectedCode = Deno.env.get("ADMIN_CODE");
-    if (!expectedCode) return reply({ success: false, error: "ADMIN_CODE secret is not configured." }, 500);
 
     const authHeader = req.headers.get("Authorization") || "";
     const jwt = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : "";
@@ -37,8 +36,10 @@ Deno.serve(async (req: Request) => {
 
     const body = await req.json();
     const { action, code } = body ?? {};
+    // Safe status endpoint: reveals only whether the secret exists, never its value.
+    if (action === "status") return reply({ success: true, configured: Boolean(expectedCode) });
     if (typeof code !== "string" || code.length > 128 || code !== expectedCode) {
-      return reply({ success: false, error: "Incorrect admin code." }, 403);
+      return reply({ success: false, error: expectedCode ? "Incorrect admin code." : "ADMIN_CODE secret is not configured." }, 403);
     }
     if (action === "unlock") return reply({ success: true });
 

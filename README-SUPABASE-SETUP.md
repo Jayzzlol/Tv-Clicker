@@ -1,38 +1,38 @@
 # TvClicker — Supabase setup
 
-This package uses Supabase anonymous sign-in when the game opens. Supabase shares global announcements and admin-started events.
+## What this update adds
+- Supabase server-side detection for the `ADMIN_CODE` Edge Function secret (the browser sees only whether it is configured).
+- Global top-10 leaderboards: most played time, most total TV, most TV per second, and most TV per click.
+- Shared live chat using Supabase Realtime; messages are limited to 300 characters and protected by row-level security.
+- Large-value checks no longer stop at JavaScript’s safe-integer threshold; the game can continue past 9 quadrillion, though JavaScript Number precision becomes approximate at extremely high balances.
+- Ten built-in promo codes.
+- `TVONEMORENOLESS`: first 10 distinct signed-in players receive 10T TV and the Mega Pack (x2 permanent multiplier, +1,000 TV per click, +1,000 TV per second). Supabase atomically limits the reward to ten players and prevents the same player redeeming twice.
 
-## 1. Create a Supabase project
-Create a project at https://supabase.com/dashboard. In **Authentication → Sign In / Providers**, enable **Anonymous Sign-Ins**.
+## 1. Supabase setup
+1. Open https://supabase.com/dashboard and select your project.
+2. Enable **Authentication → Sign In / Providers → Anonymous Sign-Ins**.
+3. Open **SQL Editor** and run the complete `supabase/schema.sql` file. This creates the leaderboard, limited-code, live-chat tables/functions, and shared game state. It also enables Realtime for chat and leaderboard updates.
 
-## 2. Create the shared-state table
-Open **SQL Editor → New query** in Supabase. Paste the full contents of `supabase/schema.sql` and click **Run**.
+## 2. Website configuration
+Edit `supabase-config.js` and set:
+- `url`: your Supabase Project URL.
+- `anonKey`: your Supabase publishable key (or legacy anon key).
 
-## 3. Configure the website
-Open `supabase-config.js`. Replace `YOUR_SUPABASE_PROJECT_URL` and `YOUR_SUPABASE_ANON_OR_PUBLISHABLE_KEY` with the Project URL and anon/publishable key from **Project Settings → API**. These values are designed for browser use. Never put the service-role key in this file.
+These are public browser configuration values. Never use the service-role key in the website.
 
-## 4. Add these GitHub Actions secrets
-In your GitHub repository, open **Settings → Secrets and variables → Actions → New repository secret**. Create all three:
+## 3. Admin secret and Edge Function
+1. In Supabase, open **Edge Functions → Secrets**.
+2. Add `ADMIN_CODE` with your private admin code.
+3. Deploy the `admin` Edge Function from `supabase/functions/admin/index.ts` (Dashboard → Edge Functions → Deploy a new function / editor).
+4. The Admin tab will call the server's `status` action and show whether the secret exists. It never receives the secret value.
 
-| Secret name | What to enter |
-|---|---|
-| `ADMIN_CODE` | Your private admin code (example: `TVAdmin2026`) |
-| `SUPABASE_ACCESS_TOKEN` | Your Supabase personal access token from your Supabase account settings |
-| `SUPABASE_PROJECT_REF` | The project reference: the part before `.supabase.co` in your Supabase Project URL |
+GitHub Pages does not need GitHub secrets to host this static website. `SUPABASE_ACCESS_TOKEN` and `SUPABASE_PROJECT_REF` are only for the optional GitHub Actions function-deployment workflow; they are not required for GitHub Pages itself.
 
-Keep these private. Do not paste them into chat or commit them to files. The workflow transfers `ADMIN_CODE` to the Supabase Edge Function as a server-side secret.
+## 4. Publish with GitHub Pages
+Upload the contents of this folder to your repository root, preserving `supabase/`. Commit to the branch configured in **Settings → Pages**.
 
-## 5. Upload and deploy
-Upload the contents of this ZIP to the root of your GitHub repository, keeping the `.github` and `supabase` folders. Commit and push to the `main` branch. Then open **GitHub → Actions → Deploy Supabase admin function → Run workflow**. The workflow deploys the `admin` Edge Function and sets the `ADMIN_CODE` secret in Supabase. It also runs automatically when the Supabase function or workflow files change on `main`.
+## Leaderboard notes
+Player identity is an anonymous Supabase user ID. Public leaderboard names are generated as `Player-xxxxxx`. Stats are submitted by the browser, so they are useful for community rankings but are not cheat-proof. They show top ten players.
 
-## 6. Unlock the owner tools
-In TvClicker, open Admin and enter the same value you saved as GitHub's `ADMIN_CODE` secret. The Edge Function verifies this code on the server.
-
-## Which Supabase secrets do I add manually?
-Only one custom Edge Function secret is required: `ADMIN_CODE`. The included GitHub workflow sets it automatically from your GitHub repository secret. Supabase automatically provides its project URL, anon key, and service-role key to Edge Functions as platform environment variables. Do not expose the service-role key in the website.
-
-## What is shared?
-- Global announcements and admin-started events update for connected players.
-- Anonymous sign-in starts automatically when the game loads.
-- TV point balances, upgrades, rebirths, and achievements remain local to each player's browser.
-- A shared leaderboard and live player directory are not included yet.
+## Promo codes
+`TVONEMORENOLESS` is globally limited to the first ten distinct Supabase players. The other nine built-in codes are local promo codes and each can be redeemed once per browser save. To make those nine globally limited too, they would need their own server-side campaign entries.

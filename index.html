@@ -34,7 +34,15 @@ header p{color:var(--muted);margin:8px 0}
 .section{display:none}.section.active{display:block}
 h2{margin:0 0 12px}
 .shop-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
-.achievement{background:var(--panel2);border:1px solid #60477a;border-radius:14px;padding:13px;display:flex;gap:12px;align-items:center}.achievement.locked{opacity:.55;filter:grayscale(.65)}.achievement .medal{font-size:1.8rem}.achievement strong{display:block}.achievement p{margin:3px 0 0;color:var(--muted);font-size:.84rem}.achievement.unlocked{border-color:#b78aff;box-shadow:0 0 16px #b78aff22}
+.achievement{background:var(--panel2);border:1px solid #60477a;border-radius:14  const defaultCodes = [
+    {code:"TVONEMORENOLESS",reward:10000000000000,limited:true},
+    {code:"TVSTART",reward:1000},{code:"SIGNALBOOST",reward:5000},
+    {code:"CHANNEL10",reward:10000},{code:"REMOTEPOWER",reward:25000},
+    {code:"STATICFREE",reward:50000},{code:"BROADCAST",reward:100000},
+    {code:"TVCREW",reward:250000},{code:"NIGHTSHIFT",reward:500000},
+    {code:"MEGASCREEN",reward:1000000}
+  ];
+ievement strong{display:block}.achievement p{margin:3px 0 0;color:var(--muted);font-size:.84rem}.achievement.unlocked{border-color:#b78aff;box-shadow:0 0 16px #b78aff22}
 .item{background:var(--panel2);border:1px solid #60477a;border-radius:15px;padding:14px;display:flex;flex-direction:column;gap:8px}
 .item h3{margin:0;font-size:1.05rem}
 .item p{margin:0;color:var(--muted);font-size:.9rem;min-height:38px}
@@ -127,6 +135,8 @@ footer{color:#d3b18a}
       <button class="tab active" data-tab="shop">🛒 Shop</button>
       <button class="tab" data-tab="codes">🎁 Codes</button>
       <button class="tab" data-tab="stats">📊 Stats</button>
+      <button class="tab" data-tab="leaderboard">🏆 Leaderboards</button>
+      <button class="tab" data-tab="chat">💬 Live Chat</button>
       <button class="tab" data-tab="achievements">🏆 Achievements</button>
       <button class="tab" data-tab="security">🛡️ Security</button>
       <button class="tab" data-tab="admin">🔐 Admin</button>
@@ -167,6 +177,30 @@ footer{color:#d3b18a}
       <div class="shop-grid" id="achievementList"></div>
     </div>
 
+    <div class="section" id="chat">
+      <h2>💬 Global Live Chat</h2>
+      <p class="small">Chat with other TvClicker players. Messages are shared live and limited to 300 characters.</p>
+      <div id="chatStatus" class="notice">Connecting to chat…</div>
+      <div id="chatMessages" aria-live="polite" style="height:300px;overflow-y:auto;background:#24170f;border:1px solid #93623b;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px"></div>
+      <label for="chatInput">Message</label>
+      <textarea id="chatInput" maxlength="300" rows="3" placeholder="Say hello to the TvClicker players…" style="width:100%;resize:vertical;background:#2a170e;border:1px solid #a8794d;color:#fff4df;border-radius:10px;padding:12px;font:inherit"></textarea>
+      <div class="row"><span id="chatCount" class="small">0 / 300</span><button class="action" id="sendChat" type="button">SEND MESSAGE</button></div>
+    </div>
+
+    <div class="section" id="leaderboard">
+      <h2>🌐 Global Leaderboards</h2>
+      <p class="small">Rankings update from player sessions connected to Supabase.</p>
+      <div class="row" style="margin:10px 0">
+        <button class="action" data-board="played">Most Played</button>
+        <button class="action" data-board="tv">Most TV</button>
+        <button class="action" data-board="second">Most Per Second</button>
+        <button class="action" data-board="click">Most Per Click</button>
+      </div>
+      <div id="leaderboardStatus" class="notice">Connecting to global leaderboard…</div>
+      <div id="leaderboardList"></div>
+      <button class="action" id="refreshLeaderboard" style="margin-top:12px">Refresh Leaderboards</button>
+    </div>
+
     <div class="section" id="stats">
       <h2>📊 Player Statistics</h2>
       <div class="stat-row"><span>Total TV earned</span><strong id="statTotal">0</strong></div>
@@ -180,7 +214,7 @@ footer{color:#d3b18a}
 
     <div class="section" id="admin">
       <h2>🔐 Owner Admin Panel (Local Demo)</h2>
-      <div class="notice">Owner access is verified by a Supabase Edge Function. Your admin code is stored as a GitHub Actions secret and is never included in this page's source code.</div>
+      <div class="notice" id="supabaseSecretStatus">Checking Supabase admin-secret configuration…</div><div class="notice">Owner access is verified by a Supabase Edge Function. Your admin code is stored as a GitHub Actions secret and is never included in this page's source code.</div>
       <div id="adminLogin">
         <label for="adminPin">Owner PIN</label>
         <input id="adminPin" type="password" inputmode="text" autocomplete="off" maxlength="64" placeholder="Enter your TvClicker admin code">
@@ -295,12 +329,83 @@ footer{color:#d3b18a}
   let state = {
     TV:0,total:0,clickPower:1,auto:0,multiplier:1,
     owned:Array(items.length).fill(0),codes:defaultCodes,
-    redeemed:[],achievements:[],rebirths:0,nextEventRoll:Date.now()+600000,activeRandomEvent:null,TVBoostUntil:0,announcement:"",globalEvent:null
+    redeemed:[],achievements:[],rebirths:0,playedSeconds:0,nextEventRoll:Date.now()+600000,activeRandomEvent:null,TVBoostUntil:0,announcement:"",globalEvent:null
   };
   const $ = id => document.getElementById(id);
-  const safeInt = n => Number.isSafeInteger(n) && n >= 0;
-  let sb = null, currentUser = null, globalChannel = null;
+  const safeInt = n => Number.isFinite(Number(n)) && Number(n) >= 0; // allow values above 9 quadrillion
+  let sb = null, currentUser = null, globalChannel = null, leaderboardChannel = null;
   let adminCode = "";
+  let leaderboardMode="played", statsSyncTimer=0, lastStatsSync=0, chatChannel=null, lastChatSent=0;
+  function playerLabel(){return currentUser?"Player-"+currentUser.id.slice(0,6):"Guest";}
+  function renderLeaderboardRows(rows){
+    const list=$("leaderboardList");list.innerHTML="";
+    if(!rows||!rows.length){list.innerHTML='<div class="notice">No leaderboard entries yet. Be the first!</div>';return;}
+    rows.forEach((r,i)=>{
+      const row=document.createElement("div");row.className="stat-row";
+      const name=document.createElement("span");name.textContent=(i+1)+". "+(r.display_name||"Player");
+      const value=document.createElement("strong");
+      const n=leaderboardMode==="played"?Math.floor(r.played_seconds||0)+" sec":formatNumber(Number(r[leaderboardMode==="tv"?"total_tv":leaderboardMode==="second"?"tv_per_second":"tv_per_click"])||0);
+      value.textContent=n;row.append(name,value);list.append(row);
+    });
+  }
+  async function refreshLeaderboard(){
+    if(!sb){$("leaderboardStatus").textContent="Supabase is not connected. Add your Project URL and publishable key.";return;}
+    $("leaderboardStatus").textContent="Loading global rankings…";
+    const column=leaderboardMode==="played"?"played_seconds":leaderboardMode==="tv"?"total_tv":leaderboardMode==="second"?"tv_per_second":"tv_per_click";
+    const {data,error}=await sb.from("player_stats").select("display_name,played_seconds,total_tv,tv_per_second,tv_per_click").order(column,{ascending:false}).limit(10);
+    if(error){$("leaderboardStatus").textContent="Leaderboard setup needed: run the updated supabase/schema.sql in SQL Editor. ("+error.message+")";return;}
+    $("leaderboardStatus").textContent="Top 10 players • "+({played:"Most Played",tv:"Most TV",second:"Most Per Second",click:"Most Per Click"}[leaderboardMode]);
+    renderLeaderboardRows(data||[]);
+  }
+  async function syncPlayerStats(){
+    if(!sb||!currentUser)return;
+    const now=Date.now(),elapsed=lastStatsSync?Math.max(0,Math.floor((now-lastStatsSync)/1000)):0;
+    lastStatsSync=now;
+    if(elapsed>0)state.playedSeconds=(state.playedSeconds||0)+Math.min(elapsed,90);
+    const row={player_id:currentUser.id,display_name:playerLabel(),played_seconds:state.playedSeconds||0,total_tv:Math.floor(state.total||0),tv_per_second:Math.floor(state.auto*state.multiplier||0),tv_per_click:Math.floor(state.clickPower*state.multiplier||0),updated_at:new Date().toISOString()};
+    const {error}=await sb.from("player_stats").upsert(row,{onConflict:"player_id"});
+    if(error)console.warn("Leaderboard sync failed:",error.message);
+  }
+  function renderChatMessage(message){
+    const box=$("chatMessages");
+    if(!box||!message)return;
+    const row=document.createElement("div");row.style.cssText="padding:8px 10px;border-radius:9px;background:#4a2b1b;border:1px solid #93623b;overflow-wrap:anywhere";
+    const head=document.createElement("div");head.style.cssText="display:flex;justify-content:space-between;gap:10px;color:#ffe3a1;font-size:.78rem";
+    const who=document.createElement("strong");who.textContent=String(message.display_name||"Player").slice(0,24);
+    const when=document.createElement("span");when.textContent=message.created_at?new Date(message.created_at).toLocaleTimeString():"now";
+    const body=document.createElement("div");body.style.cssText="white-space:pre-wrap;color:#fff4df;margin-top:4px";body.textContent=String(message.message||"").slice(0,300);
+    head.append(who,when);row.append(head,body);box.append(row);
+    while(box.children.length>80)box.removeChild(box.firstChild);
+    box.scrollTop=box.scrollHeight;
+  }
+  async function loadChat(){
+    if(!sb){$("chatStatus").textContent="Supabase is not connected.";return;}
+    const {data,error}=await sb.from("chat_messages").select("id,display_name,message,created_at").order("created_at",{ascending:false}).limit(50);
+    if(error){$("chatStatus").textContent="Chat setup needed: apply the latest schema.sql. "+error.message;return;}
+    $("chatMessages").innerHTML="";(data||[]).reverse().forEach(renderChatMessage);
+    $("chatStatus").textContent="Connected • live messages from TvClicker players";
+  }
+  async function sendChatMessage(){
+    const input=$("chatInput"),message=input.value.trim();
+    if(!message)return;
+    if(!sb||!currentUser){$("chatStatus").textContent="Chat requires Supabase sign-in.";return;}
+    if(Date.now()-lastChatSent<1500){$("chatStatus").textContent="Please wait a moment before sending another message.";return;}
+    lastChatSent=Date.now();$("sendChat").disabled=true;
+    const {data,error}=await sb.from("chat_messages").insert({user_id:currentUser.id,display_name:playerLabel(),message:message.slice(0,300)}).select("id,display_name,message,created_at").single();
+    $("sendChat").disabled=false;
+    if(error){$("chatStatus").textContent="Message could not be sent: "+error.message;return;}
+    renderChatMessage(data);input.value="";$("chatCount").textContent="0 / 300";
+    $("chatStatus").textContent="Message sent.";
+  }
+  async function checkAdminSecret(){
+    if(!sb){$("supabaseSecretStatus").textContent="Supabase is not connected; cannot check ADMIN_CODE.";return;}
+    try{
+      const {data,error}=await sb.functions.invoke("admin",{body:{action:"status"}});
+      if(error||!data)throw error||new Error("No response");
+      $("supabaseSecretStatus").textContent=data.configured?"✓ Supabase ADMIN_CODE secret detected by the server.":"⚠ Supabase ADMIN_CODE secret is missing.";
+      $("supabaseSecretStatus").className="notice "+(data.configured?"success":"error");
+    }catch(e){$("supabaseSecretStatus").textContent="Could not check Supabase secret status. Deploy the updated admin function."; $("supabaseSecretStatus").className="notice error";}
+  }
   function applyGlobalState(row){
     if(!row)return;
     state.announcement=typeof row.announcement==="string"?row.announcement.slice(0,120):"";
@@ -333,6 +438,19 @@ footer{color:#d3b18a}
       }
       currentUser=session?.user||null;
       await refreshGlobalState();
+      lastStatsSync=Date.now();
+      await syncPlayerStats();
+      await checkAdminSecret();
+      await refreshLeaderboard();
+      await loadChat();
+      chatChannel=sb.channel("TvClicker-global-chat")
+        .on("postgres_changes",{event:"INSERT",schema:"public",table:"chat_messages"},payload=>{
+          const m=payload.new;
+          if(m&&m.user_id!==currentUser?.id)renderChatMessage(m);
+        }).subscribe();
+      leaderboardChannel=sb.channel("TvClicker-global-leaderboard")
+        .on("postgres_changes",{event:"*",schema:"public",table:"player_stats"},()=>refreshLeaderboard())
+        .subscribe();
       globalChannel=sb.channel("TvClicker-global-state")
         .on("postgres_changes",{event:"*",schema:"public",table:"game_state"},payload=>applyGlobalState(payload.new))
         .subscribe();
@@ -355,7 +473,7 @@ footer{color:#d3b18a}
     const n=Number(value);
     if(!Number.isFinite(n)) return "0";
     const abs=Math.abs(n);
-    const units=[{v:1e15,s:"Qa"},{v:1e12,s:"T"},{v:1e9,s:"B"},{v:1e6,s:"M"},{v:1e3,s:"K"}];
+    const units=[{v:1e30,s:"No"},{v:1e27,s:"Oc"},{v:1e24,s:"Sp"},{v:1e21,s:"Sx"},{v:1e18,s:"Qi"},{v:1e15,s:"Qa"},{v:1e12,s:"T"},{v:1e9,s:"B"},{v:1e6,s:"M"},{v:1e3,s:"K"}];
     for(const unit of units){
       if(abs>=unit.v){
         const scaled=n/unit.v;
@@ -373,6 +491,8 @@ footer{color:#d3b18a}
       const s=JSON.parse(raw);
       if(!s || !Array.isArray(s.owned) || !Array.isArray(s.codes) || !Array.isArray(s.redeemed))return;
       state={...state,...s};
+      const savedCodes=Array.isArray(s.codes)?s.codes:[];
+      state.codes=[...savedCodes,...defaultCodes.filter(c=>!savedCodes.some(old=>old.code===c.code))];
       state.achievements=Array.isArray(s.achievements)?s.achievements.filter(x=>typeof x==="string"):[];
       state.owned=Array.from({length:items.length},(_,i)=>Number(s.owned[i])||0);
       state.rebirths=Number.isSafeInteger(state.rebirths)&&state.rebirths>=0?state.rebirths:0;
@@ -396,8 +516,9 @@ footer{color:#d3b18a}
   function renderAnnouncement(){const banner=$("announcementBanner");const message=state.announcement||"";banner.textContent=message?"📢 TVCLICKER ANNOUNCEMENT: "+message:"";banner.style.display=message?"block":"none";}
   function clickTV(){
     const gain=state.clickPower*state.multiplier*eventFactor();
-    if(!safeInt(gain)||!safeInt(state.TV+gain))return;
+    if(!safeInt(gain)||!safeInt(state.TV+gain)||!safeInt(state.total+gain))return;
     state.TV+=gain;state.total+=gain;render();save();
+    if(sb&&Date.now()-lastStatsSync>30000)syncPlayerStats();
   }
   function price(item,index){return Math.floor(item.base*Math.pow(1.65,state.owned[index]));}
   function rebirthCost(){return Math.floor(2000000000000000*Math.pow(2,state.rebirths));}
@@ -522,11 +643,11 @@ footer{color:#d3b18a}
     checkAchievements();
     $("TV").textContent=formatNumber(Math.floor(state.TV))+" 📺";
     $("perClick").textContent="+"+formatNumber(state.clickPower*state.multiplier)+" per click";
-    $("perSecond").textContent=formatNumber(state.auto)+" per second";
+    $("perSecond").textContent=formatNumber(state.auto*state.multiplier)+" per second";
     $("total").textContent=formatNumber(state.total);
     $("statTotal").textContent=formatNumber(state.total);
     $("statClick").textContent=formatNumber(state.clickPower*state.multiplier);
-    $("statAuto").textContent=formatNumber(state.auto);
+    $("statAuto").textContent=formatNumber(state.auto*state.multiplier);
     $("statMult").textContent="x"+formatNumber(state.multiplier);
     $("statUpgrades").textContent=state.owned.reduce((a,b)=>a+b,0);
     $("statCodes").textContent=state.redeemed.length;
@@ -539,25 +660,41 @@ footer{color:#d3b18a}
     renderShop();renderCodes();
   }
   $("TVButton").addEventListener("click",clickTV);
+  $("sendChat").addEventListener("click",sendChatMessage);
+  $("chatInput").addEventListener("input",()=>{$("chatCount").textContent=$("chatInput").value.length+" / 300";});
+  $("chatInput").addEventListener("keydown",event=>{if(event.key==="Enter"&&!event.shiftKey){event.preventDefault();sendChatMessage();}});
+  document.querySelectorAll("[data-board]").forEach(btn=>btn.addEventListener("click",()=>{leaderboardMode=btn.dataset.board;refreshLeaderboard();}));
+  $("refreshLeaderboard").addEventListener("click",refreshLeaderboard);
   $("rebirthButton").addEventListener("click",doRebirth);
   document.querySelectorAll(".tab").forEach(btn=>btn.addEventListener("click",()=>{
     document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b===btn));
     document.querySelectorAll(".section").forEach(s=>s.classList.toggle("active",s.id===btn.dataset.tab));
   }));
-  $("redeemButton").addEventListener("click",()=>{
+  $("redeemButton").addEventListener("click",async()=>{
     const entered=$("redeemInput").value.trim().toUpperCase();
-    const found=state.codes.find(x=>x.code===entered);
     const msg=$("codeMessage");msg.className="notice";
     if(!entered){msg.textContent="Enter a code first.";msg.classList.add("error");return;}
     if(state.redeemed.includes(entered)){msg.textContent="That code has already been used.";msg.classList.add("error");return;}
+    const found=state.codes.find(x=>x.code===entered);
     if(!found){msg.textContent="Invalid code. Try again.";msg.classList.add("error");return;}
-    if(!safeInt(found.reward)||found.reward<=0){msg.textContent="That code has an invalid reward.";msg.classList.add("error");return;}
-    if(!safeInt(state.TV+found.reward)){msg.textContent="That reward is too large.";msg.classList.add("error");return;}
+    if(entered==="TVONEMORENOLESS"){
+      if(!sb||!currentUser){msg.textContent="Connect to Supabase and sign in before redeeming this limited code.";msg.classList.add("error");return;}
+      const {data,error}=await sb.rpc("redeem_tv_code",{p_code:entered});
+      if(error||!data?.success){msg.textContent=data?.message||"This code has already been claimed by 10 players or could not be redeemed.";msg.classList.add("error");return;}
+      const reward=10000000000000;
+      state.TV+=reward;state.total+=reward;
+      // Mega Pack: permanent x2 multiplier plus +1,000 TV per click and +1,000 TV per second.
+      state.multiplier*=2;state.clickPower+=1000;state.auto+=1000;
+      state.redeemed.push(entered);$("redeemInput").value="";
+      msg.textContent="MEGA PACK unlocked! +10T TV, x2 multiplier, +1,000 per click and +1,000 per second!";msg.classList.add("success");
+      render();save();await syncPlayerStats();return;
+    }
+    if(!safeInt(found.reward)||found.reward<=0||!safeInt(state.TV+found.reward)){msg.textContent="That code has an invalid reward.";msg.classList.add("error");return;}
     const reward=found.reward*eventFactor();
     if(!safeInt(reward)||!safeInt(state.TV+reward)){msg.textContent="That reward is too large.";msg.classList.add("error");return;}
     state.TV+=reward;state.total+=reward;state.redeemed.push(entered);
-    $("redeemInput").value="";msg.textContent="Success! You received "+formatNumber(reward)+" TVs! 🎉";msg.classList.add("success");
-    render();save();
+    $("redeemInput").value="";msg.textContent="Success! You received "+formatNumber(reward)+" TV!";msg.classList.add("success");
+    render();save();syncPlayerStats();
   });
   let adminUnlocked = false;
   $("createCode").addEventListener("click",()=>{
@@ -678,12 +815,14 @@ footer{color:#d3b18a}
   render();
   $("adminAnnouncementStatus").textContent=state.announcement?"Global announcement is showing.":"No global announcement posted.";
   window.addEventListener("storage",event=>{if(event.key===SAVE_KEY){load();render();}});
+  window.addEventListener("beforeunload",()=>{if(sb&&currentUser)syncPlayerStats();});
   initSupabase();
   setInterval(()=>{
     renderTVEvent();
+    if(sb&&currentUser&&Date.now()-lastStatsSync>=30000){syncPlayerStats();}
     if(state.auto<=0)return;
-    const gain=state.auto*eventFactor();
-    if(!safeInt(gain)||!safeInt(state.TV+gain))return;
+    const gain=state.auto*state.multiplier*eventFactor();
+    if(!safeInt(gain)||!safeInt(state.TV+gain)||!safeInt(state.total+gain))return;
     state.TV+=gain;state.total+=gain;render();save();
   },1000);
 })();
