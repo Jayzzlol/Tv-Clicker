@@ -34,15 +34,7 @@ header p{color:var(--muted);margin:8px 0}
 .section{display:none}.section.active{display:block}
 h2{margin:0 0 12px}
 .shop-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
-.achievement{background:var(--panel2);border:1px solid #60477a;border-radius:14  const defaultCodes = [
-    {code:"TVONEMORENOLESS",reward:10000000000000,limited:true},
-    {code:"TVSTART",reward:1000},{code:"SIGNALBOOST",reward:5000},
-    {code:"CHANNEL10",reward:10000},{code:"REMOTEPOWER",reward:25000},
-    {code:"STATICFREE",reward:50000},{code:"BROADCAST",reward:100000},
-    {code:"TVCREW",reward:250000},{code:"NIGHTSHIFT",reward:500000},
-    {code:"MEGASCREEN",reward:1000000}
-  ];
-ievement strong{display:block}.achievement p{margin:3px 0 0;color:var(--muted);font-size:.84rem}.achievement.unlocked{border-color:#b78aff;box-shadow:0 0 16px #b78aff22}
+.achievement{background:var(--panel2);border:1px solid #60477a;border-radius:14px;padding:14px;display:flex;gap:12px;align-items:center}.achievement strong{display:block}.achievement p{margin:3px 0 0;color:var(--muted);font-size:.84rem}.achievement.unlocked{border-color:#b78aff;box-shadow:0 0 16px #b78aff22}
 .item{background:var(--panel2);border:1px solid #60477a;border-radius:15px;padding:14px;display:flex;flex-direction:column;gap:8px}
 .item h3{margin:0;font-size:1.05rem}
 .item p{margin:0;color:var(--muted);font-size:.9rem;min-height:38px}
@@ -103,6 +95,11 @@ input{background:#2a170e;border:1px solid #a8794d;color:#fff4df}
 footer{color:#d3b18a}
 @media(min-width:760px){.layout{grid-template-columns:.9fr 1.1fr;gap:18px}}
 
+
+@media(min-width:1080px){body{padding:18px}.wrap{max-width:1600px}.layout{grid-template-columns:minmax(270px,.85fr) minmax(300px,1fr) minmax(390px,1.2fr);align-items:start}.balance,.event-theater{position:sticky;top:18px}.event-theater{min-height:650px}}
+@media(min-width:760px) and (max-width:1079px){.layout{grid-template-columns:minmax(250px,.8fr) minmax(360px,1.2fr)}.event-theater{grid-column:1/-1;grid-row:2}}
+.theater-header{display:flex;justify-content:space-between;font-weight:900;color:#ffe3a1;border-bottom:4px solid #a8794d;padding:4px 0 12px;margin-bottom:14px}.live-dot{color:#ff786a;font-size:.75rem;animation:livePulse 1.2s infinite}
+.broadcast-screen{height:245px;border:10px solid #282d38;border-radius:18px;background:linear-gradient(180deg,#7dd7ef,#387bb6 58%,#182d53);box-shadow:inset 0 0 0 4px #aab4c5,inset 0 0 28px #06172b99,0 8px 0 #171c25;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:18px}.screen-sky{position:absolute;inset:0;background:radial-gradient(circle at 25% 25%,#fff8 0 3%,transparent 4%),radial-gradient(circle at 70% 40%,#fff6 0 4%,transparent 5%);animation:skyDrift 12s linear infinite}.screen-scanlines{position:absolute;inset:0;background:repeating-linear-gradient(0deg,#07142618 0 2px,transparent 2px 5px);pointer-events:none}.screen-logo{font-size:4rem;filter:drop-shadow(0 5px 5px #10203a);z-index:1}.screen-title{font-weight:1000;font-size:1.25rem;text-shadow:0 2px 4px #0b1d3c;z-index:1}.screen-subtitle{font-size:.88rem;text-shadow:0 2px 4px #0b1d3c;z-index:1}.screen-pixel{font-size:2rem;position:absolute;right:16px;bottom:10px;animation:pixelFloat 2s ease-in-out infinite}.event-feed{margin-top:22px}.feed-list{display:flex;flex-direction:column;gap:8px;max-height:210px;overflow:auto}.feed-entry{background:#352315;border:1px solid #93623b;border-radius:9px;padding:9px;font-size:.86rem;color:#ffe6c0}.wheel-wrap{position:relative;width:min(280px,80vw);margin:22px auto}.wheel-pointer{position:absolute;z-index:2;top:-13px;left:50%;transform:translateX(-50%);font-size:2rem;color:#ffdc7b}.prize-wheel{width:100%;aspect-ratio:1;border:10px solid #a8794d;border-radius:50%;background:conic-gradient(#e9a64d 0 45deg,#543b85 45deg 90deg,#d65b79 90deg 135deg,#347e9b 135deg 180deg,#e9a64d 180deg 225deg,#543b85 225deg 270deg,#d65b79 270deg 315deg,#347e9b 315deg);box-shadow:0 0 0 5px #342014,0 10px 22px #0008;display:grid;grid-template-columns:1fr 1fr;align-items:center;justify-items:center;transition:transform 4s cubic-bezier(.12,.72,.12,1)}.prize-wheel span{font-size:2rem}.event-active .broadcast-screen{box-shadow:0 0 24px #ffdf82,inset 0 0 25px #fff8}@keyframes livePulse{50%{opacity:.35}}@keyframes skyDrift{to{transform:translateX(18px)}}@keyframes pixelFloat{50%{transform:translateY(-7px) rotate(8deg)}}
 </style>
 </head>
 <body>
@@ -130,6 +127,12 @@ footer{color:#d3b18a}
       <p class="small" id="rebirthInfo">Rebirths: 0 • Permanent bonus: x1</p>
     </div>
   </section>
+  <section class="panel event-theater">
+    <div class="theater-header"><span>📡 LIVE TV STATION</span><span class="live-dot">● LIVE</span></div>
+    <div class="broadcast-screen" id="broadcastScreen"><div class="screen-sky"></div><div class="screen-scanlines"></div><div class="screen-logo">📺</div><div class="screen-title" id="broadcastTitle">WELCOME TO TVCLICKER</div><div class="screen-subtitle" id="broadcastSubtitle">Your station is on the air!</div><div class="screen-pixel" id="broadcastEffect">✨</div></div>
+    <div class="event-feed"><h2>📺 Broadcast Activity</h2><div id="eventFeed" class="feed-list"><div class="feed-entry">📡 Station connected. Waiting for the next event…</div></div></div>
+    <div class="notice" id="stageEventStatus">No special broadcast is active.</div>
+  </section>
   <section class="panel">
     <nav class="tabs">
       <button class="tab active" data-tab="shop">🛒 Shop</button>
@@ -137,6 +140,8 @@ footer{color:#d3b18a}
       <button class="tab" data-tab="stats">📊 Stats</button>
       <button class="tab" data-tab="leaderboard">🏆 Leaderboards</button>
       <button class="tab" data-tab="chat">💬 Live Chat</button>
+      <button class="tab" data-tab="wheel">🎡 Prize Wheel</button>
+      <button class="tab" data-tab="savedata">💾 Save Data</button>
       <button class="tab" data-tab="achievements">🏆 Achievements</button>
       <button class="tab" data-tab="security">🛡️ Security</button>
       <button class="tab" data-tab="admin">🔐 Admin</button>
@@ -201,6 +206,8 @@ footer{color:#d3b18a}
       <button class="action" id="refreshLeaderboard" style="margin-top:12px">Refresh Leaderboards</button>
     </div>
 
+    <div class="section" id="wheel"><h2>🎡 TV Prize Wheel</h2><p class="small">Free spins only. Win bonus TV points—no real-money bets or purchases.</p><div class="wheel-wrap"><div class="wheel-pointer">▼</div><div id="prizeWheel" class="prize-wheel"><span>📺</span><span>✨</span><span>🎁</span><span>💎</span><span>⚡</span><span>🌟</span><span>🎉</span><span>👑</span></div></div><div class="notice" id="wheelStatus">One free spin every 5 minutes.</div><button class="action" id="spinWheel">SPIN FREE WHEEL</button><p class="small" id="wheelTimer">Ready to spin!</p></div>
+    <div class="section" id="savedata"><h2>💾 Save & Restore Game Data</h2><p class="small">Download a backup, upload a previous TvClicker backup, or reset your progress.</p><button class="action" id="downloadSave">⬇️ DOWNLOAD SAVE DATA</button><label for="uploadSave">Upload a TvClicker save file (.json)</label><input id="uploadSave" type="file" accept=".json,application/json"><button class="action danger" id="resetSave">RESET ALL GAME DATA</button><div id="saveDataStatus" class="notice">Your game also autosaves in this browser.</div></div>
     <div class="section" id="stats">
       <h2>📊 Player Statistics</h2>
       <div class="stat-row"><span>Total TV earned</span><strong id="statTotal">0</strong></div>
@@ -266,8 +273,8 @@ footer{color:#d3b18a}
 
     <div class="section" id="security">
       <h2>🛡️ Game Safety Checks</h2>
-      <div class="security"><span style="font-size:1.7rem">🛡️</span><div><strong>Basic value checks enabled</strong><div class="small">Invalid values are ignored; players are never banned.</div></div></div>
-      <p class="small">Your game stays playable. These checks help prevent broken TV totals and purchases without locking players out.</p>
+      <div class="security"><span style="font-size:1.7rem">🛡️</span><div><strong>Save validation enabled</strong><div class="small">Balances use arbitrary-precision integers. Imported saves are checked before loading.</div></div></div>
+      <p class="small">A website cannot reliably detect or block every browser extension. TvClicker does not scan extensions or fingerprint devices. Client-side anti-cheat can discourage accidental save tampering, but server-side validation is needed to enforce fair global rankings.</p>
     </div>
   </section>
 </div>
@@ -323,16 +330,19 @@ footer{color:#d3b18a}
     {name:"♾️ Infinite Broadcast Tower",desc:"Double your total multiplier",base:1500000000000000,kind:"mult",amount:2}
   ];
   const defaultCodes = [
-    {code:"TvClicker",reward:100},{code:"FREE-TV",reward:500},
-    {code:"RICH",reward:5000},{code:"UPDATE",reward:10000}
+    {code:"TVONEMORENOLESS",reward:10000000000000,limited:true},
+    {code:"TVSTART",reward:1000},{code:"SIGNALBOOST",reward:5000},{code:"CHANNEL10",reward:10000},
+    {code:"REMOTEPOWER",reward:25000},{code:"STATICFREE",reward:50000},{code:"BROADCAST",reward:100000},
+    {code:"TVCREW",reward:250000},{code:"NIGHTSHIFT",reward:500000},{code:"MEGASCREEN",reward:1000000}
   ];
   let state = {
-    TV:0,total:0,clickPower:1,auto:0,multiplier:1,
+    TV:0n,total:0n,clickPower:1n,auto:0n,multiplier:1n,
     owned:Array(items.length).fill(0),codes:defaultCodes,
-    redeemed:[],achievements:[],rebirths:0,playedSeconds:0,nextEventRoll:Date.now()+600000,activeRandomEvent:null,TVBoostUntil:0,announcement:"",globalEvent:null
+    redeemed:[],achievements:[],rebirths:0,playedSeconds:0,wheelReadyAt:0,nextEventRoll:Date.now()+600000,activeRandomEvent:null,TVBoostUntil:0,announcement:"",globalEvent:null
   };
   const $ = id => document.getElementById(id);
-  const safeInt = n => Number.isFinite(Number(n)) && Number(n) >= 0; // allow values above 9 quadrillion
+  const toBig = value => { try { const str=String(value??0).trim(); return /^-?\d+$/.test(str)?BigInt(str):0n; } catch { return 0n; } };
+  const safeInt = n => toBig(n)>=0n;
   let sb = null, currentUser = null, globalChannel = null, leaderboardChannel = null;
   let adminCode = "";
   let leaderboardMode="played", statsSyncTimer=0, lastStatsSync=0, chatChannel=null, lastChatSent=0;
@@ -344,7 +354,7 @@ footer{color:#d3b18a}
       const row=document.createElement("div");row.className="stat-row";
       const name=document.createElement("span");name.textContent=(i+1)+". "+(r.display_name||"Player");
       const value=document.createElement("strong");
-      const n=leaderboardMode==="played"?Math.floor(r.played_seconds||0)+" sec":formatNumber(Number(r[leaderboardMode==="tv"?"total_tv":leaderboardMode==="second"?"tv_per_second":"tv_per_click"])||0);
+      const n=leaderboardMode==="played"?Math.floor(r.played_seconds||0)+" sec":formatNumber(toBig(r[leaderboardMode==="tv"?"total_tv":leaderboardMode==="second"?"tv_per_second":"tv_per_click"]||0));
       value.textContent=n;row.append(name,value);list.append(row);
     });
   }
@@ -362,7 +372,7 @@ footer{color:#d3b18a}
     const now=Date.now(),elapsed=lastStatsSync?Math.max(0,Math.floor((now-lastStatsSync)/1000)):0;
     lastStatsSync=now;
     if(elapsed>0)state.playedSeconds=(state.playedSeconds||0)+Math.min(elapsed,90);
-    const row={player_id:currentUser.id,display_name:playerLabel(),played_seconds:state.playedSeconds||0,total_tv:Math.floor(state.total||0),tv_per_second:Math.floor(state.auto*state.multiplier||0),tv_per_click:Math.floor(state.clickPower*state.multiplier||0),updated_at:new Date().toISOString()};
+    const row={player_id:currentUser.id,display_name:playerLabel(),played_seconds:state.playedSeconds||0,total_tv:state.total.toString(),tv_per_second:(state.auto*state.multiplier).toString(),tv_per_click:(state.clickPower*state.multiplier).toString(),updated_at:new Date().toISOString()};
     const {error}=await sb.from("player_stats").upsert(row,{onConflict:"player_id"});
     if(error)console.warn("Leaderboard sync failed:",error.message);
   }
@@ -470,20 +480,10 @@ footer{color:#d3b18a}
   }
   // Compact display formatting keeps large balances readable without changing saved values.
   function formatNumber(value){
-    const n=Number(value);
-    if(!Number.isFinite(n)) return "0";
-    const abs=Math.abs(n);
-    const units=[{v:1e30,s:"No"},{v:1e27,s:"Oc"},{v:1e24,s:"Sp"},{v:1e21,s:"Sx"},{v:1e18,s:"Qi"},{v:1e15,s:"Qa"},{v:1e12,s:"T"},{v:1e9,s:"B"},{v:1e6,s:"M"},{v:1e3,s:"K"}];
-    for(const unit of units){
-      if(abs>=unit.v){
-        const scaled=n/unit.v;
-        const digits=Math.abs(scaled)>=100?0:(Math.abs(scaled)>=10?1:2);
-        return scaled.toFixed(digits).replace(/\.?0+$/,"" )+unit.s;
-      }
-    }
-    return Math.floor(n).toLocaleString();
+    if(typeof value==="bigint") { const n=value<0n?-value:value,sign=value<0n?"-":"",units=["","K","M","B","T","Qa","Qi","Sx","Sp","Oc","No","Dc","Ud","Dd","Td","Qad","Qid","Sxd","Spd","Ocd","Nod"];if(n<1000n)return sign+n.toLocaleString();let group=0,div=1n;while(n>=div*1000n&&group<units.length-1){div*=1000n;group++;}const whole=n/div,decimal=(n%div)*10n/div;return sign+whole.toString()+(decimal?"."+decimal.toString():"")+units[group]; }
+    const n=Number(value);return Number.isFinite(n)?Math.floor(n).toLocaleString():String(value);
   }
-  function save(){ try{localStorage.setItem(SAVE_KEY,JSON.stringify(state));}catch(e){} }
+  function save(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(state,(_,v)=>typeof v==="bigint"?v.toString():v));}catch(e){console.warn("Save failed",e);}}
   function load(){
     try{
       const raw=localStorage.getItem(SAVE_KEY);
@@ -491,6 +491,7 @@ footer{color:#d3b18a}
       const s=JSON.parse(raw);
       if(!s || !Array.isArray(s.owned) || !Array.isArray(s.codes) || !Array.isArray(s.redeemed))return;
       state={...state,...s};
+      for(const key of ["TV","total","clickPower","auto","multiplier"])state[key]=toBig(s[key]??state[key]);
       const savedCodes=Array.isArray(s.codes)?s.codes:[];
       state.codes=[...savedCodes,...defaultCodes.filter(c=>!savedCodes.some(old=>old.code===c.code))];
       state.achievements=Array.isArray(s.achievements)?s.achievements.filter(x=>typeof x==="string"):[];
@@ -504,34 +505,33 @@ footer{color:#d3b18a}
   }
   function validate(){
     const fields=["TV","total","clickPower","auto","multiplier"];
-    for(const key of fields){
-      if(!safeInt(state[key])) state[key]=0;
-    }
+    for(const key of fields)state[key]=toBig(state[key]);
     state.owned=state.owned.map(n=>safeInt(n)?n:0);
-    if(state.multiplier<1) state.multiplier=1;
-    if(state.clickPower<1) state.clickPower=1;
+    if(state.multiplier<1n) state.multiplier=1n;
+    if(state.clickPower<1n) state.clickPower=1n;
     return true;
   }
-  function eventFactor(){const random=state.activeRandomEvent&&Date.now()<state.activeRandomEvent.endsAt?Math.max(10,state.activeRandomEvent.multiplier):1;const global=state.globalEvent&&Date.now()<state.globalEvent.endsAt?state.globalEvent.multiplier:1;return random*global;}
+  function eventFactor(){const random=state.activeRandomEvent&&Date.now()<state.activeRandomEvent.endsAt?Math.max(10,state.activeRandomEvent.multiplier):1;const global=state.globalEvent&&Date.now()<state.globalEvent.endsAt?state.globalEvent.multiplier:1;return BigInt(Math.max(1,Math.floor(random*global)));}
   function renderAnnouncement(){const banner=$("announcementBanner");const message=state.announcement||"";banner.textContent=message?"📢 TVCLICKER ANNOUNCEMENT: "+message:"";banner.style.display=message?"block":"none";}
   function clickTV(){
     const gain=state.clickPower*state.multiplier*eventFactor();
-    if(!safeInt(gain)||!safeInt(state.TV+gain)||!safeInt(state.total+gain))return;
     state.TV+=gain;state.total+=gain;render();save();
     if(sb&&Date.now()-lastStatsSync>30000)syncPlayerStats();
   }
-  function price(item,index){return Math.floor(item.base*Math.pow(1.65,state.owned[index]));}
-  function rebirthCost(){return Math.floor(2000000000000000*Math.pow(2,state.rebirths));}
+  function price(item,index){const count=Math.min(10000,Math.max(0,state.owned[index]));return BigInt(item.base)*(165n**BigInt(count))/(100n**BigInt(count));}
+  function rebirthRequirements(){return (state.rebirths+1)*5;}
+  function rebirthCost(){let cost=1000000000000000000n*(5n**BigInt(Math.min(state.rebirths,1000)));for(let i=0;i<items.length;i++){const next=price(items[i],i);if(next*2n>cost)cost=next*2n;}return cost;}
   function doRebirth(){
     const cost=rebirthCost();
-    if(state.TV<cost)return;
-    if(!confirm("Rebirth now? Your TV and shop upgrades reset, but your permanent multiplier doubles!"))return;
-    state.TV=0;
-    state.clickPower=1;
-    state.auto=0;
+    const ownedTotal=state.owned.reduce((a,b)=>a+b,0);
+    if(state.TV<cost||ownedTotal<rebirthRequirements())return;
+    if(!confirm("Rebirth now? You need the TV cost and "+rebirthRequirements()+" total upgrades. Your TV and shop upgrades reset, but your permanent multiplier doubles!"))return;
+    state.TV=0n;
+    state.clickPower=1n;
+    state.auto=0n;
     state.owned=Array(items.length).fill(0);
     state.rebirths++;
-    state.multiplier*=2;
+    state.multiplier*=2n;
     render();save();
     alert("REBIRTH COMPLETE! Your permanent multiplier is now x"+formatNumber(state.multiplier)+"!");
     if(state.rebirths===2){
@@ -544,11 +544,11 @@ footer{color:#d3b18a}
   }
   function buy(index){
     const item=items[index],cost=price(item,index);
-    if(!safeInt(cost)||state.TV<cost)return;
+    if(state.TV<cost)return;
     state.TV-=cost;state.owned[index]++;
-    if(item.kind==="click")state.clickPower+=item.amount;
-    if(item.kind==="auto")state.auto+=item.amount;
-    if(item.kind==="mult")state.multiplier*=item.amount;
+    if(item.kind==="click")state.clickPower+=BigInt(item.amount);
+    if(item.kind==="auto")state.auto+=BigInt(item.amount);
+    if(item.kind==="mult")state.multiplier*=BigInt(item.amount);
     if(!validate())return;
     render();save();
   }
@@ -586,12 +586,13 @@ footer{color:#d3b18a}
       let event=null;
       if(roll<30)event={name:"Thanksgiving Eating",multiplier:10,endsAt:now+30000};
       else if(roll<40)event={name:"Trick-or-Treat",multiplier:10,endsAt:now+30000};
-      if(event){state.activeRandomEvent=event;state.announcement="";}
+      if(event){state.activeRandomEvent=event;state.announcement="";addFeed((event.name.includes("Trick")?"🎃":"🦃")+" "+event.name+" started! x10 TV for 30 seconds.");}
       state.nextEventRoll=now+600000;save();
     }
     const status=$("TVEventStatus"),timer=$("TVEventTimer");
     if(state.globalEvent&&now>=state.globalEvent.endsAt){state.globalEvent=null;save();}
     const active=state.globalEvent||(state.activeRandomEvent&&now<state.activeRandomEvent.endsAt?state.activeRandomEvent:null);
+    const stage=$("broadcastScreen");if(stage){stage.classList.toggle("event-active",!!active);$("broadcastTitle").textContent=active?active.name.toUpperCase():"WELCOME TO TVCLICKER";$("broadcastSubtitle").textContent=active?"BONUS BROADCAST • x"+Math.max(10,active.multiplier)+" TV":"Your station is on the air!";$("broadcastEffect").textContent=active?(active.name.includes("Trick")?"🎃✨":"🦃✨"):"✨";$("stageEventStatus").textContent=active?"🔴 LIVE EVENT: "+active.name+" — x"+Math.max(10,active.multiplier)+" TV":"No special broadcast is active.";}
     if(active){
       const left=Math.max(0,Math.ceil((active.endsAt-now)/1000));
       status.textContent=(active.name==="Thanksgiving Eating"?"🦃":"🎃")+" "+active.name+" IS HERE! All TV earnings are x"+Math.max(10,active.multiplier)+"!";
@@ -606,10 +607,10 @@ footer{color:#d3b18a}
     renderAnnouncement();
   }
   const achievementDefs=[
-    {id:"first-TV",icon:"📺",name:"First Sweet",desc:"Earn your first 100 TV.",test:()=>state.total>=100},
-    {id:"collector",icon:"🧺",name:"TV Collector",desc:"Earn 10,000 TV in total.",test:()=>state.total>=10000},
-    {id:"millionaire",icon:"💎",name:"TV Millionaire",desc:"Earn 1,000,000 TV in total.",test:()=>state.total>=1000000},
-    {id:"billionaire",icon:"👑",name:"TV Billionaire",desc:"Earn 1 billion TV in total.",test:()=>state.total>=1000000000},
+    {id:"first-TV",icon:"📺",name:"First Sweet",desc:"Earn your first 100 TV.",test:()=>state.total>=100n},
+    {id:"collector",icon:"🧺",name:"TV Collector",desc:"Earn 10,000 TV in total.",test:()=>state.total>=10000n},
+    {id:"millionaire",icon:"💎",name:"TV Millionaire",desc:"Earn 1,000,000 TV in total.",test:()=>state.total>=1000000n},
+    {id:"billionaire",icon:"👑",name:"TV Billionaire",desc:"Earn 1 billion TV in total.",test:()=>state.total>=1000000000n},
     {id:"upgrade-one",icon:"🛒",name:"Shopper",desc:"Buy your first upgrade.",test:()=>state.owned.reduce((a,b)=>a+b,0)>=1},
     {id:"upgrade-ten",icon:"🏭",name:"Upgrade Expert",desc:"Own 10 upgrades at once.",test:()=>state.owned.reduce((a,b)=>a+b,0)>=10},
     {id:"code-redeemer",icon:"🎁",name:"Code Cracker",desc:"Redeem your first code.",test:()=>state.redeemed.length>=1},
@@ -641,7 +642,7 @@ footer{color:#d3b18a}
   function render(){
     renderTVEvent();
     checkAchievements();
-    $("TV").textContent=formatNumber(Math.floor(state.TV))+" 📺";
+    $("TV").textContent=formatNumber(state.TV)+" 📺";
     $("perClick").textContent="+"+formatNumber(state.clickPower*state.multiplier)+" per click";
     $("perSecond").textContent=formatNumber(state.auto*state.multiplier)+" per second";
     $("total").textContent=formatNumber(state.total);
@@ -654,12 +655,24 @@ footer{color:#d3b18a}
     $("statRebirths").textContent=state.rebirths;
     const rc=rebirthCost();
     $("rebirthCost").textContent=formatNumber(rc)+" 📺";
-    $("rebirthButton").disabled=state.TV<rc;
-    $("rebirthButton").textContent=state.TV>=rc?"🌟 REBIRTH NOW — PERMANENT x2 BONUS":"REBIRTH — NEED "+formatNumber(Math.max(0,rc-state.TV))+" MORE";
-    $("rebirthInfo").textContent="Rebirths: "+state.rebirths+" • Permanent bonus: x"+formatNumber(state.multiplier);
+    const req=rebirthRequirements(),ownedNow=state.owned.reduce((a,b)=>a+b,0),ready=state.TV>=rc&&ownedNow>=req;
+    $("rebirthButton").disabled=!ready;
+    $("rebirthButton").textContent=ready?"🌟 REBIRTH NOW — PERMANENT x2 BONUS":"REBIRTH — NEED "+formatNumber(rc>state.TV?rc-state.TV:0n)+" TV + "+Math.max(0,req-ownedNow)+" UPGRADES";
+    $("rebirthInfo").textContent="Rebirths: "+state.rebirths+" • Permanent bonus: x"+formatNumber(state.multiplier)+" • Requires "+req+" upgrades";
     renderShop();renderCodes();
   }
   $("TVButton").addEventListener("click",clickTV);
+  function addFeed(message){const feed=$("eventFeed");if(!feed)return;const entry=document.createElement("div");entry.className="feed-entry";entry.textContent=new Date().toLocaleTimeString()+" — "+message;feed.prepend(entry);while(feed.children.length>8)feed.removeChild(feed.lastChild);}
+  function downloadGameSave(){const data=JSON.stringify(state,(_,v)=>typeof v==="bigint"?v.toString():v,2);const blob=new Blob([data],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="TvClicker-save.json";a.click();URL.revokeObjectURL(url);$("saveDataStatus").textContent="Save downloaded. Keep the file somewhere safe.";}
+  $("downloadSave").addEventListener("click",downloadGameSave);
+  $("adminBackup").addEventListener("click",downloadGameSave);
+  $("uploadSave").addEventListener("change",async e=>{const file=e.target.files?.[0];if(!file)return;try{const imported=JSON.parse(await file.text());if(!imported||!Array.isArray(imported.owned)||!Array.isArray(imported.codes)||!Array.isArray(imported.redeemed))throw new Error("This is not a valid TvClicker save file.");if(!confirm("Replace your current TvClicker progress with this uploaded save? Download a backup first if needed."))return;for(const k of ["TV","total","clickPower","auto","multiplier"])imported[k]=toBig(imported[k]);state={...state,...imported};state.owned=Array.from({length:items.length},(_,i)=>Number(imported.owned[i])||0);state.codes=[...imported.codes,...defaultCodes.filter(c=>!imported.codes.some(x=>x.code===c.code))];validate();render();save();$("saveDataStatus").textContent="Save uploaded and restored successfully.";}catch(err){$("saveDataStatus").textContent=err.message||"Could not read that save file.";}e.target.value="";});
+  $("resetSave").addEventListener("click",()=>{if(!confirm("Reset ALL TvClicker progress in this browser? Download a backup first if needed."))return;localStorage.removeItem(SAVE_KEY);location.reload();});
+  $("adminBackup").addEventListener("click",downloadGameSave);
+  let wheelRotation=0;
+  $("spinWheel").addEventListener("click",()=>{const now=Date.now();if(now<(state.wheelReadyAt||0)){$("wheelStatus").textContent="Your free spin is still recharging.";return;}const prizes=[{label:"+100 TV",value:100n,weight:32},{label:"+1,000 TV",value:1000n,weight:25},{label:"+10,000 TV",value:10000n,weight:18},{label:"+100,000 TV",value:100000n,weight:12},{label:"+1,000,000 TV",value:1000000n,weight:7},{label:"+10,000,000 TV",value:10000000n,weight:4},{label:"x2 multiplier",mult:true,weight:2}];let roll=Math.random()*100,prize=prizes[0];for(const item of prizes){roll-=item.weight;if(roll<=0){prize=item;break;}}wheelRotation+=1440+Math.floor(Math.random()*360);$("prizeWheel").style.transform=`rotate(${wheelRotation}deg)`;if(prize.mult)state.multiplier*=2n;else{state.TV+=prize.value;state.total+=prize.value;}state.wheelReadyAt=now+300000;$("wheelStatus").textContent="🎉 You won "+prize.label+"!";$("wheelTimer").textContent="Next free spin in 5 minutes.";addFeed("🎡 Prize Wheel: "+prize.label);render();save();});
+  function refreshWheel(){const left=Math.max(0,(state.wheelReadyAt||0)-Date.now());$("spinWheel").disabled=left>0;$("wheelTimer").textContent=left?"Free spin in "+Math.ceil(left/60000)+" minute(s).":"Your free spin is ready!";}
+
   $("sendChat").addEventListener("click",sendChatMessage);
   $("chatInput").addEventListener("input",()=>{$("chatCount").textContent=$("chatInput").value.length+" / 300";});
   $("chatInput").addEventListener("keydown",event=>{if(event.key==="Enter"&&!event.shiftKey){event.preventDefault();sendChatMessage();}});
@@ -681,17 +694,16 @@ footer{color:#d3b18a}
       if(!sb||!currentUser){msg.textContent="Connect to Supabase and sign in before redeeming this limited code.";msg.classList.add("error");return;}
       const {data,error}=await sb.rpc("redeem_tv_code",{p_code:entered});
       if(error||!data?.success){msg.textContent=data?.message||"This code has already been claimed by 10 players or could not be redeemed.";msg.classList.add("error");return;}
-      const reward=10000000000000;
+      const reward=10000000000000n;
       state.TV+=reward;state.total+=reward;
       // Mega Pack: permanent x2 multiplier plus +1,000 TV per click and +1,000 TV per second.
-      state.multiplier*=2;state.clickPower+=1000;state.auto+=1000;
+      state.multiplier*=2n;state.clickPower+=1000n;state.auto+=1000n;
       state.redeemed.push(entered);$("redeemInput").value="";
       msg.textContent="MEGA PACK unlocked! +10T TV, x2 multiplier, +1,000 per click and +1,000 per second!";msg.classList.add("success");
       render();save();await syncPlayerStats();return;
     }
-    if(!safeInt(found.reward)||found.reward<=0||!safeInt(state.TV+found.reward)){msg.textContent="That code has an invalid reward.";msg.classList.add("error");return;}
-    const reward=found.reward*eventFactor();
-    if(!safeInt(reward)||!safeInt(state.TV+reward)){msg.textContent="That reward is too large.";msg.classList.add("error");return;}
+    const baseReward=toBig(found.reward);if(baseReward<=0n){msg.textContent="That code has an invalid reward.";msg.classList.add("error");return;}
+    const reward=baseReward*eventFactor();
     state.TV+=reward;state.total+=reward;state.redeemed.push(entered);
     $("redeemInput").value="";msg.textContent="Success! You received "+formatNumber(reward)+" TV!";msg.classList.add("success");
     render();save();syncPlayerStats();
@@ -733,22 +745,21 @@ footer{color:#d3b18a}
     $("adminPin").value="";
   });
   $("adminGive").addEventListener("click",()=>{
-    const amount=Number($("adminGrant").value);
-    if(!Number.isSafeInteger(amount)||amount<1||amount>1000000000){$("adminMessage").textContent="Enter an amount from 1 to 1,000,000,000.";return;}
-    if(!safeInt(state.TV+amount)||!safeInt(state.total+amount)){ $("adminMessage").textContent="That amount is too large.";return;}
+    const amount=toBig($("adminGrant").value);
+    if(amount<1n){$("adminMessage").textContent="Enter a whole-number amount greater than zero.";return;}
     state.TV+=amount;state.total+=amount;render();save();updateAdminStats();
     $("adminMessage").textContent="Added "+formatNumber(amount)+" TV to this browser's game.";
   });
   $("adminSet").addEventListener("click",()=>{
-    const amount=Number($("adminSetBalance").value);
-    if(!Number.isSafeInteger(amount)||amount<0){$("adminMessage").textContent="Enter a whole-number balance from 0 to 9,007,199,254,740,991.";return;}
+    const amount=toBig($("adminSetBalance").value);
+    if(amount<0n){$("adminMessage").textContent="Enter a whole-number balance of zero or more.";return;}
     state.TV=amount;render();save();updateAdminStats();
     $("adminMessage").textContent="TV balance set to "+formatNumber(amount)+".";
   });
   $("adminTakeButton").addEventListener("click",()=>{
-    const amount=Number($("adminTake").value);
-    if(!Number.isSafeInteger(amount)||amount<1){$("adminMessage").textContent="Enter a whole number greater than zero.";return;}
-    const removed=Math.min(amount,state.TV);state.TV-=removed;render();save();updateAdminStats();
+    const amount=toBig($("adminTake").value);
+    if(amount<1n){$("adminMessage").textContent="Enter a whole number greater than zero.";return;}
+    const removed=amount<state.TV?amount:state.TV;state.TV-=removed;render();save();updateAdminStats();
     $("adminMessage").textContent="Removed "+formatNumber(removed)+" TV.";
   });
   $("adminAnnounce").addEventListener("click",async()=>{
@@ -768,13 +779,6 @@ footer{color:#d3b18a}
       $("adminAnnouncementStatus").textContent="No global announcement posted.";
       $("adminMessage").textContent="Global announcement cleared.";
     }catch(error){$("adminMessage").textContent=error.message;}
-  });
-  $("adminBackup").addEventListener("click",()=>{
-    const data=JSON.stringify(state,null,2);
-    const blob=new Blob([data],{type:"application/json"});
-    const url=URL.createObjectURL(blob);const a=document.createElement("a");
-    a.href=url;a.download="TvClicker-save-backup.json";a.click();URL.revokeObjectURL(url);
-    $("adminMessage").textContent="Save backup download started.";
   });
   $("adminReset").addEventListener("click",()=>{
     if(!confirm("Reset ALL TvClicker TV Clicker progress saved in this browser? This cannot be undone."))return;
@@ -818,11 +822,10 @@ footer{color:#d3b18a}
   window.addEventListener("beforeunload",()=>{if(sb&&currentUser)syncPlayerStats();});
   initSupabase();
   setInterval(()=>{
-    renderTVEvent();
+    renderTVEvent();refreshWheel();
     if(sb&&currentUser&&Date.now()-lastStatsSync>=30000){syncPlayerStats();}
-    if(state.auto<=0)return;
+    if(state.auto<=0n)return;
     const gain=state.auto*state.multiplier*eventFactor();
-    if(!safeInt(gain)||!safeInt(state.TV+gain)||!safeInt(state.total+gain))return;
     state.TV+=gain;state.total+=gain;render();save();
   },1000);
 })();
