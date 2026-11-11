@@ -185,6 +185,11 @@ footer{color:#d3b18a}
     <div class="section" id="chat">
       <h2>💬 Global Live Chat</h2>
       <p class="small">Chat with other TvClicker players. Messages are shared live and limited to 300 characters.</p>
+      <div class="notice" style="margin-bottom:12px">
+        <label for="usernameInput">Your username (3–20 letters, numbers, or underscores)</label>
+        <div class="row"><input id="usernameInput" maxlength="20" placeholder="Choose a username"><button class="action" id="saveUsername" type="button">SAVE USERNAME</button></div>
+        <div id="usernameStatus" class="small" aria-live="polite">Loading your player profile…</div>
+      </div>
       <div id="chatStatus" class="notice">Connecting to chat…</div>
       <div id="chatMessages" aria-live="polite" style="height:300px;overflow-y:auto;background:#24170f;border:1px solid #93623b;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px"></div>
       <label for="chatInput">Message</label>
@@ -273,8 +278,8 @@ footer{color:#d3b18a}
 
     <div class="section" id="security">
       <h2>🛡️ Game Safety Checks</h2>
-      <div class="security"><span style="font-size:1.7rem">🛡️</span><div><strong>Save validation enabled</strong><div class="small">Balances use arbitrary-precision integers. Imported saves are checked before loading.</div></div></div>
-      <p class="small">A website cannot reliably detect or block every browser extension. TvClicker does not scan extensions or fingerprint devices. Client-side anti-cheat can discourage accidental save tampering, but server-side validation is needed to enforce fair global rankings.</p>
+      <div class="security"><span style="font-size:1.7rem">🛡️</span><div><strong>Server-side checks active</strong><div class="small">Username changes, chat moderation, and leaderboard writes are checked by Supabase before they are saved.</div></div></div>
+      <p class="small">The backend blocks direct browser writes to chat and leaderboard tables and checks suspicious stat changes. A static browser game still cannot make every local click or purchase tamper-proof. Browser extensions cannot be reliably detected from a website; TvClicker does not scan extensions or fingerprint devices.</p>
     </div>
   </section>
 </div>
@@ -344,9 +349,28 @@ footer{color:#d3b18a}
   const toBig = value => { try { const str=String(value??0).trim(); return /^-?\d+$/.test(str)?BigInt(str):0n; } catch { return 0n; } };
   const safeInt = n => toBig(n)>=0n;
   let sb = null, currentUser = null, globalChannel = null, leaderboardChannel = null;
-  let adminCode = "";
+  let adminCode = "", currentUsername = "";
   let leaderboardMode="played", statsSyncTimer=0, lastStatsSync=0, chatChannel=null, lastChatSent=0;
-  function playerLabel(){return currentUser?"Player-"+currentUser.id.slice(0,6):"Guest";}
+  function playerLabel(){return currentUsername || (currentUser?"Player-"+currentUser.id.slice(0,6):"Guest");}
+  async function loadPlayerProfile(){
+    if(!sb||!currentUser)return;
+    const {data,error}=await sb.functions.invoke("player-api",{body:{action:"get_profile"}});
+    if(error||!data?.success){$("usernameStatus").textContent=data?.error||error?.message||"Could not load profile.";if(data?.banned){$("chatStatus").textContent="This account is permanently banned from online features.";$("sendChat").disabled=true;}return;}
+    currentUsername=data.username||("Player-"+currentUser.id.slice(0,6));
+    $("usernameInput").value=currentUsername;
+    $("usernameStatus").textContent="Signed in as "+currentUsername+".";
+    if(data.banned){$("chatStatus").textContent="This account is banned from online features.";$("sendChat").disabled=true;}
+    else if(data.timeoutUntil&&new Date(data.timeoutUntil).getTime()>Date.now())$("chatStatus").textContent="Chat timeout active until "+new Date(data.timeoutUntil).toLocaleTimeString()+".";
+  }
+  async function saveUsername(){
+    if(!sb){$("usernameStatus").textContent="Connect to Supabase before changing your username.";return;}
+    const username=$("usernameInput").value.trim();
+    const {data,error}=await sb.functions.invoke("player-api",{body:{action:"update_username",username}});
+    if(error||!data?.success){$("usernameStatus").textContent=data?.error||error?.message||"Username could not be changed.";return;}
+    currentUsername=data.username;$("usernameInput").value=currentUsername;
+    $("usernameStatus").textContent="Username saved as "+currentUsername+".";
+    await syncPlayerStats();await refreshLeaderboard();
+  }
   function renderLeaderboardRows(rows){
     const list=$("leaderboardList");list.innerHTML="";
     if(!rows||!rows.length){list.innerHTML='<div class="notice">No leaderboard entries yet. Be the first!</div>';return;}
@@ -372,9 +396,9 @@ footer{color:#d3b18a}
     const now=Date.now(),elapsed=lastStatsSync?Math.max(0,Math.floor((now-lastStatsSync)/1000)):0;
     lastStatsSync=now;
     if(elapsed>0)state.playedSeconds=(state.playedSeconds||0)+Math.min(elapsed,90);
-    const row={player_id:currentUser.id,display_name:playerLabel(),played_seconds:state.playedSeconds||0,total_tv:state.total.toString(),tv_per_second:(state.auto*state.multiplier).toString(),tv_per_click:(state.clickPower*state.multiplier).toString(),updated_at:new Date().toISOString()};
-    const {error}=await sb.from("player_stats").upsert(row,{onConflict:"player_id"});
-    if(error)console.warn("Leaderboard sync failed:",error.message);
+    const payload={action:"sync_stats",played_seconds:state.playedSeconds||0,total_tv:state.total.toString(),tv_per_second:(state.auto*state.multiplier).toString(),tv_per_click:(state.clickPower*state.multiplier).toString()};
+    const {data,error}=await sb.functions.invoke("player-api",{body:payload});
+    if(error||!data?.success)console.warn("Server rejected leaderboard sync:",data?.error||error?.message);
   }
   function renderChatMessage(message){
     const box=$("chatMessages");
@@ -401,10 +425,15 @@ footer{color:#d3b18a}
     if(!sb||!currentUser){$("chatStatus").textContent="Chat requires Supabase sign-in.";return;}
     if(Date.now()-lastChatSent<1500){$("chatStatus").textContent="Please wait a moment before sending another message.";return;}
     lastChatSent=Date.now();$("sendChat").disabled=true;
-    const {data,error}=await sb.from("chat_messages").insert({user_id:currentUser.id,display_name:playerLabel(),message:message.slice(0,300)}).select("id,display_name,message,created_at").single();
+    const {data,error}=await sb.functions.invoke("player-api",{body:{action:"send_chat",message:message.slice(0,300)}});
     $("sendChat").disabled=false;
-    if(error){$("chatStatus").textContent="Message could not be sent: "+error.message;return;}
-    renderChatMessage(data);input.value="";$("chatCount").textContent="0 / 300";
+    if(error||!data?.success){
+      const reason=data?.error||error?.message||"Message could not be sent.";
+      $("chatStatus").textContent=reason;
+      if(data?.banned)$("sendChat").disabled=true;
+      return;
+    }
+    renderChatMessage(data.message);input.value="";$("chatCount").textContent="0 / 300";
     $("chatStatus").textContent="Message sent.";
   }
   async function checkAdminSecret(){
@@ -447,6 +476,7 @@ footer{color:#d3b18a}
         session=signed.data.session;
       }
       currentUser=session?.user||null;
+      await loadPlayerProfile();
       await refreshGlobalState();
       lastStatsSync=Date.now();
       await syncPlayerStats();
@@ -663,16 +693,18 @@ footer{color:#d3b18a}
   }
   $("TVButton").addEventListener("click",clickTV);
   function addFeed(message){const feed=$("eventFeed");if(!feed)return;const entry=document.createElement("div");entry.className="feed-entry";entry.textContent=new Date().toLocaleTimeString()+" — "+message;feed.prepend(entry);while(feed.children.length>8)feed.removeChild(feed.lastChild);}
-  function downloadGameSave(){const data=JSON.stringify(state,(_,v)=>typeof v==="bigint"?v.toString():v,2);const blob=new Blob([data],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="TvClicker-save.json";a.click();URL.revokeObjectURL(url);$("saveDataStatus").textContent="Save downloaded. Keep the file somewhere safe.";}
+  function downloadGameSave(){const exportState={...state};delete exportState.codes;delete exportState.redeemed;exportState.redeemedCount=state.redeemed.length;const data=JSON.stringify(exportState,(_,v)=>typeof v==="bigint"?v.toString():v,2);const blob=new Blob([data],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="TvClicker-save.json";a.click();URL.revokeObjectURL(url);$("saveDataStatus").textContent="Save downloaded. Promo-code definitions and code names are not included.";}
   $("downloadSave").addEventListener("click",downloadGameSave);
   $("adminBackup").addEventListener("click",downloadGameSave);
-  $("uploadSave").addEventListener("change",async e=>{const file=e.target.files?.[0];if(!file)return;try{const imported=JSON.parse(await file.text());if(!imported||!Array.isArray(imported.owned)||!Array.isArray(imported.codes)||!Array.isArray(imported.redeemed))throw new Error("This is not a valid TvClicker save file.");if(!confirm("Replace your current TvClicker progress with this uploaded save? Download a backup first if needed."))return;for(const k of ["TV","total","clickPower","auto","multiplier"])imported[k]=toBig(imported[k]);state={...state,...imported};state.owned=Array.from({length:items.length},(_,i)=>Number(imported.owned[i])||0);state.codes=[...imported.codes,...defaultCodes.filter(c=>!imported.codes.some(x=>x.code===c.code))];validate();render();save();$("saveDataStatus").textContent="Save uploaded and restored successfully.";}catch(err){$("saveDataStatus").textContent=err.message||"Could not read that save file.";}e.target.value="";});
+  $("uploadSave").addEventListener("change",async e=>{const file=e.target.files?.[0];if(!file)return;try{const imported=JSON.parse(await file.text());if(!imported||!Array.isArray(imported.owned))throw new Error("This is not a valid TvClicker save file.");if(!confirm("Replace your current TvClicker progress with this uploaded save? Download a backup first if needed."))return;for(const k of ["TV","total","clickPower","auto","multiplier"])imported[k]=toBig(imported[k]);const oldCodes=Array.isArray(imported.codes)?imported.codes:defaultCodes;const oldRedeemed=Array.isArray(imported.redeemed)?imported.redeemed:defaultCodes.map(c=>c.code);state={...state,...imported,redeemed:oldRedeemed};state.owned=Array.from({length:items.length},(_,i)=>Number(imported.owned[i])||0);state.codes=[...oldCodes,...defaultCodes.filter(c=>!oldCodes.some(x=>x.code===c.code))];delete state.redeemedCount;validate();render();save();$("saveDataStatus").textContent="Save uploaded. Built-in promo codes are locked on imported code-free saves to prevent repeat claims.";}catch(err){$("saveDataStatus").textContent=err.message||"Could not read that save file.";}e.target.value="";});
   $("resetSave").addEventListener("click",()=>{if(!confirm("Reset ALL TvClicker progress in this browser? Download a backup first if needed."))return;localStorage.removeItem(SAVE_KEY);location.reload();});
   $("adminBackup").addEventListener("click",downloadGameSave);
   let wheelRotation=0;
   $("spinWheel").addEventListener("click",()=>{const now=Date.now();if(now<(state.wheelReadyAt||0)){$("wheelStatus").textContent="Your free spin is still recharging.";return;}const prizes=[{label:"+100 TV",value:100n,weight:32},{label:"+1,000 TV",value:1000n,weight:25},{label:"+10,000 TV",value:10000n,weight:18},{label:"+100,000 TV",value:100000n,weight:12},{label:"+1,000,000 TV",value:1000000n,weight:7},{label:"+10,000,000 TV",value:10000000n,weight:4},{label:"x2 multiplier",mult:true,weight:2}];let roll=Math.random()*100,prize=prizes[0];for(const item of prizes){roll-=item.weight;if(roll<=0){prize=item;break;}}wheelRotation+=1440+Math.floor(Math.random()*360);$("prizeWheel").style.transform=`rotate(${wheelRotation}deg)`;if(prize.mult)state.multiplier*=2n;else{state.TV+=prize.value;state.total+=prize.value;}state.wheelReadyAt=now+300000;$("wheelStatus").textContent="🎉 You won "+prize.label+"!";$("wheelTimer").textContent="Next free spin in 5 minutes.";addFeed("🎡 Prize Wheel: "+prize.label);render();save();});
   function refreshWheel(){const left=Math.max(0,(state.wheelReadyAt||0)-Date.now());$("spinWheel").disabled=left>0;$("wheelTimer").textContent=left?"Free spin in "+Math.ceil(left/60000)+" minute(s).":"Your free spin is ready!";}
 
+  $("saveUsername").addEventListener("click",saveUsername);
+  $("usernameInput").addEventListener("keydown",event=>{if(event.key==="Enter"){event.preventDefault();saveUsername();}});
   $("sendChat").addEventListener("click",sendChatMessage);
   $("chatInput").addEventListener("input",()=>{$("chatCount").textContent=$("chatInput").value.length+" / 300";});
   $("chatInput").addEventListener("keydown",event=>{if(event.key==="Enter"&&!event.shiftKey){event.preventDefault();sendChatMessage();}});
@@ -683,13 +715,17 @@ footer{color:#d3b18a}
     document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b===btn));
     document.querySelectorAll(".section").forEach(s=>s.classList.toggle("active",s.id===btn.dataset.tab));
   }));
-  $("redeemButton").addEventListener("click",async()=>{
-    const entered=$("redeemInput").value.trim().toUpperCase();
+  async function redeemEnteredCode(){
+    const typedCode=String($("redeemInput").value||"").normalize("NFKC").toUpperCase().replace(/[\\s-]+/g,"").trim();
+    // Accept both spellings; Supabase stores the original campaign name.
+    const entered=typedCode==="TVNOMORENOLESS"?"TVONEMORENOLESS":typedCode;
     const msg=$("codeMessage");msg.className="notice";
     if(!entered){msg.textContent="Enter a code first.";msg.classList.add("error");return;}
-    if(state.redeemed.includes(entered)){msg.textContent="That code has already been used.";msg.classList.add("error");return;}
-    const found=state.codes.find(x=>x.code===entered);
-    if(!found){msg.textContent="Invalid code. Try again.";msg.classList.add("error");return;}
+    state.codes=[...(Array.isArray(state.codes)?state.codes:[]),...defaultCodes.filter(c=>!(state.codes||[]).some(old=>String(old.code||"").toUpperCase().replace(/[\\s-]+/g,"")===c.code))];
+    const redeemed=(state.redeemed||[]).some(c=>String(c).toUpperCase().replace(/[\\s-]+/g,"")===entered);
+    if(redeemed){msg.textContent="That code has already been used on this save.";msg.classList.add("error");return;}
+    const found=state.codes.find(x=>String(x.code||"").toUpperCase().replace(/[\\s-]+/g,"")===entered)||defaultCodes.find(x=>x.code===entered);
+    if(!found){msg.textContent="Code not found. Check spelling. Special code: TVNOMORENOLESS (also TVONEMORENOLESS). Other codes: TVSTART, SIGNALBOOST, CHANNEL10, REMOTEPOWER, STATICFREE, BROADCAST, TVCREW, NIGHTSHIFT, MEGASCREEN.";msg.classList.add("error");return;}
     if(entered==="TVONEMORENOLESS"){
       if(!sb||!currentUser){msg.textContent="Connect to Supabase and sign in before redeeming this limited code.";msg.classList.add("error");return;}
       const {data,error}=await sb.rpc("redeem_tv_code",{p_code:entered});
@@ -707,6 +743,10 @@ footer{color:#d3b18a}
     state.TV+=reward;state.total+=reward;state.redeemed.push(entered);
     $("redeemInput").value="";msg.textContent="Success! You received "+formatNumber(reward)+" TV!";msg.classList.add("success");
     render();save();syncPlayerStats();
+  }
+  $("redeemButton").addEventListener("click",redeemEnteredCode);
+  $("redeemInput").addEventListener("keydown",event=>{
+    if(event.key==="Enter"){event.preventDefault();redeemEnteredCode();}
   });
   let adminUnlocked = false;
   $("createCode").addEventListener("click",()=>{
