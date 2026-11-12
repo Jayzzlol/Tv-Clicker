@@ -96,15 +96,24 @@ footer{color:#d3b18a}
 @media(min-width:760px){.layout{grid-template-columns:.9fr 1.1fr;gap:18px}}
 
 
-@media(min-width:1080px){body{padding:18px}.wrap{max-width:1600px}.layout{grid-template-columns:minmax(270px,.85fr) minmax(300px,1fr) minmax(390px,1.2fr);align-items:start}.balance,.event-theater{position:sticky;top:18px}.event-theater{min-height:650px}}
-@media(min-width:760px) and (max-width:1079px){.layout{grid-template-columns:minmax(250px,.8fr) minmax(360px,1.2fr)}.event-theater{grid-column:1/-1;grid-row:2}}
+@media(min-width:1080px){body{padding:18px}.wrap{max-width:1600px}.layout{grid-template-columns:minmax(270px,.85fr) minmax(300px,1fr) minmax(390px,1.2fr);align-items:start}.balance,}
+@media(min-width:760px) and (max-width:1079px){.layout{grid-template-columns:minmax(250px,.8fr) minmax(360px,1.2fr)}}
 .theater-header{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;font-weight:900;color:#ffe3a1;border-bottom:4px solid #a8794d;padding:4px 0 12px;margin-bottom:14px}.event-badge{font-size:.7rem;letter-spacing:1px;color:#fff0bf;background:#704a2a;border:1px solid #d7a85f;border-radius:999px;padding:5px 9px}
 .broadcast-screen{height:245px;border:10px solid #282d38;border-radius:18px;background:linear-gradient(180deg,#7dd7ef,#387bb6 58%,#182d53);box-shadow:inset 0 0 0 4px #aab4c5,inset 0 0 28px #06172b99,0 8px 0 #171c25;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:18px}.screen-sky{position:absolute;inset:0;background:radial-gradient(circle at 25% 25%,#fff8 0 3%,transparent 4%),radial-gradient(circle at 70% 40%,#fff6 0 4%,transparent 5%);animation:skyDrift 12s linear infinite}.screen-scanlines{position:absolute;inset:0;background:repeating-linear-gradient(0deg,#07142618 0 2px,transparent 2px 5px);pointer-events:none}.screen-logo{font-size:4rem;filter:drop-shadow(0 5px 5px #10203a);z-index:1}.screen-title{font-weight:1000;font-size:1.25rem;text-shadow:0 2px 4px #0b1d3c;z-index:1}.screen-subtitle{font-size:.88rem;text-shadow:0 2px 4px #0b1d3c;z-index:1}.screen-pixel{font-size:2rem;position:absolute;right:16px;bottom:10px;animation:pixelFloat 2s ease-in-out infinite}.event-decor{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:1;opacity:.45;transition:opacity .3s}.event-decor span{position:absolute;font-size:1.5rem;filter:drop-shadow(0 2px 4px #17213c);animation:decorFloat 3.2s ease-in-out infinite}.event-decor span:nth-child(1){left:8%;top:18%}.event-decor span:nth-child(2){left:28%;top:72%;animation-delay:-1s}.event-decor span:nth-child(3){right:10%;top:20%;animation-delay:-1.8s}.event-decor span:nth-child(4){right:30%;bottom:12%;animation-delay:-.6s}.event-decor span:nth-child(5){left:48%;top:8%;animation-delay:-2.2s}.event-decor span:nth-child(6){right:7%;bottom:14%;animation-delay:-1.3s}.event-active .event-decor{opacity:1}.event-active .event-decor span{font-size:2rem;animation-duration:1.5s}.event-feed{margin-top:22px}.feed-list{display:flex;flex-direction:column;gap:8px;max-height:210px;overflow:auto}.feed-entry{background:#352315;border:1px solid #93623b;border-radius:9px;padding:9px;font-size:.86rem;color:#ffe6c0}.wheel-wrap{position:relative;width:min(280px,80vw);margin:22px auto}.wheel-pointer{position:absolute;z-index:2;top:-13px;left:50%;transform:translateX(-50%);font-size:2rem;color:#ffdc7b}.prize-wheel{width:100%;aspect-ratio:1;border:10px solid #a8794d;border-radius:50%;background:conic-gradient(#e9a64d 0 45deg,#543b85 45deg 90deg,#d65b79 90deg 135deg,#347e9b 135deg 180deg,#e9a64d 180deg 225deg,#543b85 225deg 270deg,#d65b79 270deg 315deg,#347e9b 315deg);box-shadow:0 0 0 5px #342014,0 10px 22px #0008;display:grid;grid-template-columns:1fr 1fr;align-items:center;justify-items:center;transition:transform 4s cubic-bezier(.12,.72,.12,1)}.prize-wheel span{font-size:2rem}.event-active .broadcast-screen{box-shadow:0 0 24px #ffdf82,inset 0 0 25px #fff8}@keyframes decorFloat{0%,100%{transform:translateY(0) rotate(-8deg) scale(.9)}50%{transform:translateY(-13px) rotate(12deg) scale(1.15)}}@keyframes skyDrift{to{transform:translateX(18px)}}@keyframes pixelFloat{50%{transform:translateY(-7px) rotate(8deg)}}
+
+#fullScreenEventFX{position:fixed;inset:0;z-index:5000;pointer-events:none;overflow:hidden;display:none}
+#fullScreenEventFX.active{display:block}
+#eventDecor{position:absolute;inset:0;overflow:hidden}
+#eventDecor span{position:absolute;top:-12vh;left:var(--x);font-size:clamp(1.8rem,4vw,3.5rem);opacity:.82;filter:drop-shadow(0 4px 8px #0008);animation:eventFall var(--duration) linear infinite;animation-delay:var(--delay)}
+@keyframes eventFall{0%{transform:translate3d(0,-15vh,0) rotate(0deg);opacity:0}10%{opacity:.9}90%{opacity:.85}100%{transform:translate3d(var(--drift),115vh,0) rotate(540deg);opacity:0}}
+.player-name{display:inline-block;margin-top:7px;padding:6px 12px;border:1px solid #a8794d;border-radius:999px;background:#4b2d1d;color:#ffe3a1;font-weight:800}
+
 </style>
 </head>
 <body>
+<div id="fullScreenEventFX" aria-hidden="true"><div id="eventDecor"></div></div>
 <div class="wrap">
-<header><h1>📺 TvClicker</h1><p>Tap the television, buy upgrades, and build the ultimate TV station!</p></header>
+<header><h1>📺 TvClicker</h1><p>Tap the television, buy upgrades, and build the ultimate TV station!</p><div id="headerPlayerName" class="player-name">Playing as Guest</div></header>
 <div id="game">
 <div id="announcementBanner" class="notice" style="display:none;text-align:center;font-weight:800;background:#4a2469;border:1px solid #b78aff"></div>
 <div class="layout">
@@ -126,12 +135,6 @@ footer{color:#d3b18a}
       <button class="action" id="rebirthButton" style="width:100%;margin-top:10px" disabled>REBIRTH — NEED MORE TV</button>
       <p class="small" id="rebirthInfo">Rebirths: 0 • Permanent bonus: x1</p>
     </div>
-  </section>
-  <section class="panel event-theater">
-    <div class="theater-header"><span>🎉 EVENT SHOWCASE</span><span class="event-badge">✨ SPECIAL EFFECTS</span></div>
-    <div class="broadcast-screen" id="broadcastScreen"><div class="screen-sky"></div><div class="screen-scanlines"></div><div class="event-decor" id="eventDecor" aria-hidden="true"><span>✨</span><span>⭐</span><span>🎊</span><span>✨</span><span>🌟</span><span>🎉</span></div><div class="screen-logo">📺</div><div class="screen-title" id="broadcastTitle">WELCOME TO TVCLICKER</div><div class="screen-subtitle" id="broadcastSubtitle">Your station is on the air!</div><div class="screen-pixel" id="broadcastEffect">✨</div></div>
-    <div class="event-feed"><h2>📺 Broadcast Activity</h2><div id="eventFeed" class="feed-list"><div class="feed-entry">📡 Station connected. Waiting for the next event…</div></div></div>
-    <div class="notice" id="stageEventStatus">No special broadcast is active.</div>
   </section>
   <section class="panel">
     <nav class="tabs">
@@ -358,6 +361,7 @@ footer{color:#d3b18a}
     if(error||!data?.success){$("usernameStatus").textContent=data?.error||error?.message||"Could not load profile.";if(data?.banned){$("chatStatus").textContent="This account is permanently banned from online features.";$("sendChat").disabled=true;}return;}
     currentUsername=data.username||("Player-"+currentUser.id.slice(0,6));
     $("usernameInput").value=currentUsername;
+    $("headerPlayerName").textContent="Playing as "+currentUsername;
     $("usernameStatus").textContent="Signed in as "+currentUsername+".";
     if(data.banned){$("chatStatus").textContent="This account is banned from online features.";$("sendChat").disabled=true;}
     else if(data.timeoutUntil&&new Date(data.timeoutUntil).getTime()>Date.now())$("chatStatus").textContent="Chat timeout active until "+new Date(data.timeoutUntil).toLocaleTimeString()+".";
@@ -368,6 +372,7 @@ footer{color:#d3b18a}
     const {data,error}=await sb.functions.invoke("player-api",{body:{action:"update_username",username}});
     if(error||!data?.success){$("usernameStatus").textContent=data?.error||error?.message||"Username could not be changed.";return;}
     currentUsername=data.username;$("usernameInput").value=currentUsername;
+    $("headerPlayerName").textContent="Playing as "+currentUsername;
     $("usernameStatus").textContent="Username saved as "+currentUsername+".";
     await syncPlayerStats();await refreshLeaderboard();
   }
@@ -622,15 +627,12 @@ footer{color:#d3b18a}
     const status=$("TVEventStatus"),timer=$("TVEventTimer");
     if(state.globalEvent&&now>=state.globalEvent.endsAt){state.globalEvent=null;save();}
     const active=state.globalEvent||(state.activeRandomEvent&&now<state.activeRandomEvent.endsAt?state.activeRandomEvent:null);
-    const stage=$("broadcastScreen");if(stage){
-      stage.classList.toggle("event-active",!!active);
+    const fx=$("fullScreenEventFX"),decor=$("eventDecor");
+    if(fx&&decor){
+      fx.classList.toggle("active",!!active);
       const isTrick=!!active&&active.name.includes("Trick"),isThanksgiving=!!active&&active.name.includes("Thanksgiving");
-      stage.dataset.event=active?(isTrick?"trick-or-treat":isThanksgiving?"thanksgiving":"special"):"none";
-      $("broadcastTitle").textContent=active?active.name.toUpperCase():"WELCOME TO TVCLICKER";
-      $("broadcastSubtitle").textContent=active?"SPECIAL EVENT BONUS • x"+Math.max(10,active.multiplier)+" TV":"Your TV world is ready for the next event!";
-      $("broadcastEffect").textContent=active?(isTrick?"🎃✨":isThanksgiving?"🦃✨":"🎉✨"):"✨";
-      const decor=$("eventDecor");if(decor)decor.innerHTML=active?(isTrick?"<span>🎃</span><span>🦇</span><span>🍬</span><span>✨</span><span>👻</span><span>🕸️</span>":isThanksgiving?"<span>🍂</span><span>🦃</span><span>🌽</span><span>✨</span><span>🍁</span><span>🥧</span>":"<span>🎉</span><span>⭐</span><span>🎊</span><span>✨</span><span>🌟</span><span>🎈</span>"):"<span>✨</span><span>⭐</span><span>🎊</span><span>✨</span><span>🌟</span><span>🎉</span>";
-      $("stageEventStatus").textContent=active?"🎉 EVENT ACTIVE: "+active.name+" — x"+Math.max(10,active.multiplier)+" TV":"No special event is active. Watch for the next surprise!";
+      const symbols=active?(isTrick?["🎃","🦇","🍬","✨","👻","🕸️","🦇","🎃","🍬","👻","✨","🕸️"]:isThanksgiving?["🍂","🦃","🌽","✨","🍁","🥧","🍂","🍁","🦃","🌽","🥧","✨"]:["🎉","⭐","🎊","✨","🌟","🎈","🎉","⭐","🎊","🎈","✨","🌟"]):[];
+      decor.innerHTML=symbols.map((symbol,i)=>`<span style="--x:${(i*37)%100}%;--duration:${7+(i%5)*1.7}s;--delay:${-(i%8)*1.1}s;--drift:${((i%2)?1:-1)*(20+(i%4)*18)}px">${symbol}</span>`).join("");
     }
     if(active){
       const left=Math.max(0,Math.ceil((active.endsAt-now)/1000));
