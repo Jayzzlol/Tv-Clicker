@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>TvClicker</title>
+<style>
+:root{--bg:#100b1d;--panel:#211536;--panel2:#2b1b42;--pink:#f04b9b;--gold:#ffd86b;--text:#fff;--muted:#c9badb;--green:#70e0a0;--red:#ff7777}
+*{box-sizing:border-box}
+html,body{touch-action:manipulation}
+button,input,select,textarea{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:linear-gradient(180deg,#ead7ff 0%,#c9a7f5 52%,#a77be8 100%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh;padding:24px}
+button,input{font:inherit}
+.wrap{max-width:920px;margin:auto}
+header{text-align:center;margin-bottom:18px}
+h1{font-size:clamp(2rem,6vw,3.5rem);margin:0;color:var(--gold);text-shadow:0 4px 24px #f04b9b66}
+header p{color:var(--muted);margin:8px 0}
+.layout{display:grid;grid-template-columns:1fr;gap:16px}
+.panel{background:#211536eF;border:1px solid #62457d;border-radius:20px;padding:18px;box-shadow:0 16px 40px #0005}
+.balance{text-align:center;background:linear-gradient(145deg,#39205a,#211536);padding:24px}
+.balance-number{font-size:clamp(1.8rem,7.5vw,4rem);font-weight:900;color:var(--gold);margin:4px auto;max-width:100%;min-width:0;overflow-wrap:anywhere;word-break:break-word;line-height:1.12;font-variant-numeric:tabular-nums}
+.statsline{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;color:var(--muted)}
+#TVButton{display:block;width:clamp(180px,30vw,250px);height:clamp(180px,30vw,250px);margin:28px auto 14px;border:2px solid #ffb5b5;border-radius:50%;padding:0;background:radial-gradient(ellipse at 28% 20%,#fff1f1 0%,#ff9a9a 8%,#ff4848 28%,#ed101f 54%,#b90020 76%,#690014 100%);color:white;font-size:1rem;font-weight:900;cursor:pointer;box-shadow:inset -18px -24px 28px #57000e99,inset 10px 12px 20px #ffffff66,0 7px 0 #760018,0 12px 24px #0008,0 0 35px #ff263b44;transition:filter .12s ease;position:relative;overflow:hidden;isolation:isolate;touch-action:manipulation}
+#TVButton::before{content:"";position:absolute;width:35%;height:17%;left:18%;top:13%;border-radius:50%;background:linear-gradient(180deg,#ffffffdd,#ffffff08);filter:blur(2px);transform:rotate(-32deg);z-index:-1}
+#TVButton::after{content:"";position:absolute;inset:7%;border-radius:50%;border:1px solid #ffffff55;box-shadow:inset 2px 3px 7px #ffffff33;pointer-events:none}
+#TVButton:hover{filter:brightness(1.08)}
+#TVButton:active{filter:brightness(.98);box-shadow:inset -18px -24px 28px #57000e99,inset 10px 12px 20px #ffffff66,0 2px 0 #760018,0 5px 12px #0007}
+#TVButton:focus-visible{outline:4px solid #ffcfdf;outline-offset:7px}
+.TV-icon{font-size:clamp(3.3rem,8vw,4.6rem);display:block;position:relative;z-index:1;filter:drop-shadow(0 3px 3px #79001699)}
+.ball-label{display:block;position:relative;z-index:1;font-size:.85rem;letter-spacing:1.4px;text-shadow:0 2px 3px #740014}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.tab{flex:1;min-width:110px;border:1px solid #694d82;background:#302044;color:white;padding:11px;border-radius:12px;cursor:pointer;font-weight:750}
+.tab.active{background:var(--pink);border-color:var(--pink)}
+.section{display:none}.section.active{display:block}
+h2{margin:0 0 12px}
+.shop-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.achievement{background:var(--panel2);border:1px solid #60477a;border-radius:14px;padding:14px;display:flex;gap:12px;align-items:center}.achievement strong{display:block}.achievement p{margin:3px 0 0;color:var(--muted);font-size:.84rem}.achievement.unlocked{border-color:#b78aff;box-shadow:0 0 16px #b78aff22}
+.item{background:var(--panel2);border:1px solid #60477a;border-radius:15px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.item h3{margin:0;font-size:1.05rem}
+.item p{margin:0;color:var(--muted);font-size:.9rem;min-height:38px}
+.item-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto}
+.price{font-weight:850;color:var(--gold)}
+button.action{border:0;border-radius:10px;background:var(--pink);color:white;font-weight:800;padding:10px 14px;cursor:pointer}
+button.action:disabled{opacity:.4;cursor:not-allowed}
+input{width:100%;background:#140d20;color:white;border:1px solid #72578c;border-radius:10px;padding:12px;margin:6px 0 10px}
+label{display:block;color:var(--muted);font-size:.9rem;margin-top:8px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.row>*{flex:1}
+.notice{padding:11px;border-radius:10px;background:#352447;color:var(--muted);margin:10px 0}
+.success{color:var(--green)}.error{color:var(--red)}
+.code-row,.stat-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid #4b365f;min-width:0}.stat-row>span{min-width:0;flex:1}.stat-row>strong{min-width:0;max-width:58%;text-align:right;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}.price{overflow-wrap:anywhere;min-width:0}.item-footer{flex-wrap:wrap}.notice,.small{overflow-wrap:anywhere}
+.code-row:last-child,.stat-row:last-child{border:0}
+.small{font-size:.82rem;color:var(--muted)}
+.security{display:flex;align-items:center;gap:10px;background:#173a2b;border:1px solid #397a58;border-radius:12px;padding:12px;margin-bottom:12px}
+.danger{background:#632039!important}
+footer{text-align:center;color:#9f91ae;font-size:.8rem;margin:18px 0}
+@media(min-width:760px){.layout{grid-template-columns:1fr 1.2fr}.balance{align-self:start;position:sticky;top:20px}}
+@media(max-width:420px){body{padding:12px}.panel{padding:14px}.balance{padding:18px}.balance-number{font-size:clamp(1.65rem,9vw,2.5rem)}.stat-row{gap:8px}.stat-row>strong{max-width:52%}}
+
+#rebirthScare{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;flex-direction:column;text-align:center;background:radial-gradient(circle,#4b075d 0%,#120018 55%,#000 100%);color:#fff;padding:24px}
+#rebirthScare.show{display:flex;animation:scareFlash .18s steps(2,end) 5}
+#rebirthScare .scare-face{font-size:clamp(7rem,28vw,16rem);line-height:1;filter:drop-shadow(0 0 28px #ff174f);animation:scarePop .35s ease-out}
+#rebirthScare .scare-title{font-size:clamp(2rem,8vw,4rem);font-weight:1000;letter-spacing:3px;color:#ff315d;text-shadow:0 0 20px #ff174f}
+#rebirthScare .scare-sub{font-size:1rem;color:#f4d9ff;margin-top:8px}
+@keyframes scareFlash{50%{background:#5c001c}}
+@keyframes scarePop{from{transform:scale(.15) rotate(-12deg);opacity:.2}to{transform:scale(1) rotate(0);opacity:1}}
+@media(prefers-reduced-motion:reduce){#rebirthScare.show{animation:none}#rebirthScare .scare-face{animation:none}}
+
+
+/* TV-bakery inspired visual refresh (original styling and artwork) */
+:root{--bg:#2a160d;--panel:#4a2b1b;--panel2:#5b3824;--pink:#d58a3a;--gold:#ffe3a1;--text:#fff8e8;--muted:#e4c9a6;--green:#8ee0a4;--red:#ff9b83}
+body{background:radial-gradient(ellipse at 50% 0%,#8a542e 0%,#4a2918 45%,#21120d 100%);color:var(--text)}
+h1{color:#ffe5a8;text-shadow:0 3px 0 #663717,0 7px 22px #170a05}
+header p{color:#f0d5b2}
+.panel{background:linear-gradient(160deg,#68452dF2,#382015F5);border:2px solid #a8794d;border-radius:15px;box-shadow:0 12px 32px #13090399,inset 0 1px #f6d4a522}
+.balance{background:linear-gradient(150deg,#765033,#402416);}
+.balance-number{color:#ffe3a1;text-shadow:0 3px 0 #5a3217}
+#TVButton{width:clamp(190px,31vw,270px);height:clamp(190px,31vw,270px);border:8px solid #8b542b;border-radius:50%;background:radial-gradient(circle at 35% 28%,#fff2c7 0%,#e9b66e 23%,#c77c38 62%,#82431f 100%);box-shadow:inset -16px -20px 24px #57280c88,inset 10px 12px 20px #fff5d977,0 9px 0 #542b16,0 14px 24px #0009,0 0 28px #f0bd6b22;transition:transform .08s ease,filter .12s ease}
+#TVButton::before{content:"";position:absolute;width:35%;height:17%;left:18%;top:13%;border-radius:50%;background:linear-gradient(180deg,#ffffffdd,#ffffff08);filter:blur(2px);transform:rotate(-32deg);z-index:-1}
+#TVButton::after{inset:7%;border:2px dotted #fff0c566;box-shadow:inset 2px 3px 7px #ffffff33}
+#TVButton:active{transform:translateY(5px) scale(.985);box-shadow:inset -16px -20px 24px #57280c88,inset 10px 12px 20px #fff5d977,0 3px 0 #542b16,0 6px 12px #0008}
+.TV-icon{font-size:clamp(6rem,15vw,9rem);filter:drop-shadow(0 5px 4px #5a2b1488)}
+.ball-label{color:#5a2d14;font-weight:1000;text-shadow:0 1px 0 #fff0c9;letter-spacing:1.8px}
+.tab{background:#4b2d1d;border:1px solid #a8794d;color:#fff1d7}
+.tab.active{background:linear-gradient(#e7ad5e,#bd7433);border-color:#f3cb8b;color:#32190d;text-shadow:0 1px #ffffff66}
+.item,.achievement{background:linear-gradient(145deg,#70482c,#4c2d1b);border:1px solid #a8794d;box-shadow:inset 0 1px #ffffff12}
+.item h3,.achievement strong{color:#ffe2a6}
+.price{color:#ffdf8b}
+button.action{background:linear-gradient(#e7ad5e,#bd7433);color:#32190d;border:1px solid #f0c98b;box-shadow:0 3px 0 #77431f;font-weight:900}
+button.action:active{transform:translateY(2px);box-shadow:0 1px 0 #77431f}
+input{background:#2a170e;border:1px solid #a8794d;color:#fff4df}
+.notice{background:#593922;color:#f2d9b6;border:1px solid #93623b}
+.security{background:#24432f;border-color:#65956d}
+.danger{background:linear-gradient(#b65b48,#873326)!important;color:white!important;border-color:#d68a76!important}
+footer{color:#d3b18a}
+@media(min-width:760px){.layout{grid-template-columns:.9fr 1.1fr;gap:18px}}
+
+
+@media(min-width:1080px){body{padding:18px}.wrap{max-width:1600px}.layout{grid-template-columns:minmax(270px,.85fr) minmax(300px,1fr) minmax(390px,1.2fr);align-items:start}.balance,}
+@media(min-width:760px) and (max-width:1079px){.layout{grid-template-columns:minmax(250px,.8fr) minmax(360px,1.2fr)}}
+.theater-header{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;font-weight:900;color:#ffe3a1;border-bottom:4px solid #a8794d;padding:4px 0 12px;margin-bottom:14px}.event-badge{font-size:.7rem;letter-spacing:1px;color:#fff0bf;background:#704a2a;border:1px solid #d7a85f;border-radius:999px;padding:5px 9px}
+.broadcast-screen{height:245px;border:10px solid #282d38;border-radius:18px;background:linear-gradient(180deg,#7dd7ef,#387bb6 58%,#182d53);box-shadow:inset 0 0 0 4px #aab4c5,inset 0 0 28px #06172b99,0 8px 0 #171c25;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:18px}.screen-sky{position:absolute;inset:0;background:radial-gradient(circle at 25% 25%,#fff8 0 3%,transparent 4%),radial-gradient(circle at 70% 40%,#fff6 0 4%,transparent 5%);animation:skyDrift 12s linear infinite}.screen-scanlines{position:absolute;inset:0;background:repeating-linear-gradient(0deg,#07142618 0 2px,transparent 2px 5px);pointer-events:none}.screen-logo{font-size:4rem;filter:drop-shadow(0 5px 5px #10203a);z-index:1}.screen-title{font-weight:1000;font-size:1.25rem;text-shadow:0 2px 4px #0b1d3c;z-index:1}.screen-subtitle{font-size:.88rem;text-shadow:0 2px 4px #0b1d3c;z-index:1}.screen-pixel{font-size:2rem;position:absolute;right:16px;bottom:10px;animation:pixelFloat 2s ease-in-out infinite}.event-decor{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:1;opacity:.45;transition:opacity .3s}.event-decor span{position:absolute;font-size:1.5rem;filter:drop-shadow(0 2px 4px #17213c);animation:decorFloat 3.2s ease-in-out infinite}.event-decor span:nth-child(1){left:8%;top:18%}.event-decor span:nth-child(2){left:28%;top:72%;animation-delay:-1s}.event-decor span:nth-child(3){right:10%;top:20%;animation-delay:-1.8s}.event-decor span:nth-child(4){right:30%;bottom:12%;animation-delay:-.6s}.event-decor span:nth-child(5){left:48%;top:8%;animation-delay:-2.2s}.event-decor span:nth-child(6){right:7%;bottom:14%;animation-delay:-1.3s}.event-active .event-decor{opacity:1}.event-active .event-decor span{font-size:2rem;animation-duration:1.5s}.event-feed{margin-top:22px}.feed-list{display:flex;flex-direction:column;gap:8px;max-height:210px;overflow:auto}.feed-entry{background:#352315;border:1px solid #93623b;border-radius:9px;padding:9px;font-size:.86rem;color:#ffe6c0}.wheel-wrap{position:relative;width:min(280px,80vw);margin:22px auto}.wheel-pointer{position:absolute;z-index:2;top:-13px;left:50%;transform:translateX(-50%);font-size:2rem;color:#ffdc7b}.prize-wheel{width:100%;aspect-ratio:1;border:10px solid #a8794d;border-radius:50%;background:conic-gradient(#e9a64d 0 45deg,#543b85 45deg 90deg,#d65b79 90deg 135deg,#347e9b 135deg 180deg,#e9a64d 180deg 225deg,#543b85 225deg 270deg,#d65b79 270deg 315deg,#347e9b 315deg);box-shadow:0 0 0 5px #342014,0 10px 22px #0008;display:grid;grid-template-columns:1fr 1fr;align-items:center;justify-items:center;transition:transform 4s cubic-bezier(.12,.72,.12,1)}.prize-wheel span{font-size:2rem}.event-active .broadcast-screen{box-shadow:0 0 24px #ffdf82,inset 0 0 25px #fff8}@keyframes decorFloat{0%,100%{transform:translateY(0) rotate(-8deg) scale(.9)}50%{transform:translateY(-13px) rotate(12deg) scale(1.15)}}@keyframes skyDrift{to{transform:translateX(18px)}}@keyframes pixelFloat{50%{transform:translateY(-7px) rotate(8deg)}}
+
+#fullScreenEventFX{position:fixed;inset:0;z-index:5000;pointer-events:none;overflow:hidden;display:none}
+#fullScreenEventFX.active{display:block}
+#eventDecor{position:absolute;inset:0;overflow:hidden}
+#eventDecor span{position:absolute;top:-12vh;left:var(--x);font-size:clamp(1.8rem,4vw,3.5rem);opacity:.82;filter:drop-shadow(0 4px 8px #0008);animation:eventFall var(--duration) linear infinite;animation-delay:var(--delay)}
+@keyframes eventFall{0%{transform:translate3d(0,-15vh,0) rotate(0deg);opacity:0}10%{opacity:.9}90%{opacity:.85}100%{transform:translate3d(var(--drift),115vh,0) rotate(540deg);opacity:0}}
+.player-name{display:inline-block;margin-top:7px;padding:6px 12px;border:1px solid #a8794d;border-radius:999px;background:#4b2d1d;color:#ffe3a1;font-weight:800}
+
+</style>
+</head>
+<body>
+<div id="fullScreenEventFX" aria-hidden="true"><div id="eventDecor"></div></div>
+<div class="wrap">
+<header><h1>📺 TvClicker</h1><p>Tap the television, buy upgrades, and build the ultimate TV station!</p><div id="headerPlayerName" class="player-name">Playing as Guest</div></header>
+<div id="game">
+<div id="announcementBanner" class="notice" style="display:none;text-align:center;font-weight:800;background:#4a2469;border:1px solid #b78aff"></div>
+<div class="layout">
+  <section class="panel balance">
+    <div style="font-size:1.1rem">YOUR TV POINTS</div>
+    <div class="balance-number" id="TV">0 📺</div>
+    <div class="statsline"><span id="perClick">+1 per click</span><span id="perSecond">0 per second</span></div>
+    <button id="TVButton" aria-label="Click the TV to earn TV points"><span class="TV-icon">▶</span><span class="ball-label">POWER ON!</span></button>
+    <div class="notice" style="margin-top:14px;text-align:left">
+      <h2 style="margin:0 0 6px">📡 Random Broadcast Events</h2>
+      <p id="TVEventStatus" class="small">Thanksgiving Eating: 30% chance • Trick-or-Treat: 10% chance. Events are checked every 10 minutes.</p>
+      <strong id="TVEventTimer">Next random event check in 10:00</strong>
+    </div>
+    <p class="small">Total earned: <strong id="total">0</strong></p>
+    <div class="notice" style="text-align:left;margin-top:18px">
+      <h2 style="margin:0 0 6px">🌟 Rebirth</h2>
+      <p class="small">Reset your TV and shop upgrades to earn a permanent x2 multiplier. Rebirth is the most expensive upgrade in the game!</p>
+      <div class="statsline" style="justify-content:space-between"><span>Rebirth cost:</span><strong id="rebirthCost">2,000,000,000,000,000 📺</strong></div>
+      <button class="action" id="rebirthButton" style="width:100%;margin-top:10px" disabled>REBIRTH — NEED MORE TV</button>
+      <p class="small" id="rebirthInfo">Rebirths: 0 • Permanent bonus: x1</p>
+    </div>
+  </section>
+  <section class="panel">
+    <nav class="tabs">
+      <button class="tab active" data-tab="shop">🛒 Shop</button>
+      <button class="tab" data-tab="codes">🎁 Codes</button>
+      <button class="tab" data-tab="stats">📊 Stats</button>
+      <button class="tab" data-tab="leaderboard">🏆 Leaderboards</button>
+      <button class="tab" data-tab="chat">💬 Live Chat</button>
+      <button class="tab" data-tab="wheel">🎡 Prize Wheel</button>
+      <button class="tab" data-tab="savedata">💾 Save Data</button>
+      <button class="tab" data-tab="achievements">🏆 Achievements</button>
+      <button class="tab" data-tab="security">🛡️ Security</button>
+      <button class="tab" data-tab="admin">🔐 Admin</button>
+    </nav>
+    <div class="section active" id="shop">
+      <h2>📡 TV Station Shop</h2><div class="shop-grid" id="shopItems"></div>
+    </div>
+    <section class="notice" id="usdTVShop" style="margin-top:20px;text-align:left">
+      <h2 style="margin:0 0 6px">💵 TV Point Packs</h2>
+      <p class="small">Choose a TV point pack. These are demo prices only — checkout is not connected and no payment will be taken.</p>
+      <div class="shop-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px">
+        <div class="shop-item"><strong>📺 Starter Pack</strong><p class="small">1,000 TVs</p><strong>$0.99 USD</strong><button class="action" type="button" disabled>Checkout coming soon</button></div>
+        <div class="shop-item"><strong>📡 Signal Pack</strong><p class="small">10,000 TVs</p><strong>$4.99 USD</strong><button class="action" type="button" disabled>Checkout coming soon</button></div>
+        <div class="shop-item"><strong>🎁 Mega Pack</strong><p class="small">100,000 TVs</p><strong>$9.99 USD</strong><button class="action" type="button" disabled>Checkout coming soon</button></div>
+        <div class="shop-item"><strong>👑 TV Station Supporter Pack</strong><p class="small">1,000,000 TVs</p><strong>$19.99 USD</strong><button class="action" type="button" disabled>Checkout coming soon</button></div>
+      </div>
+      <p class="small" style="margin-bottom:0">Real-money purchases require a secure payment provider and server-side verification. Ask a parent or guardian before any purchase.</p>
+    </section>
+
+<div class="section" id="codes">
+      <h2>🎁 Redeem a Code</h2>
+      <label for="redeemInput">Enter your code</label><input id="redeemInput" placeholder="Example: TVTIME" maxlength="32">
+      <button class="action" id="redeemButton">REDEEM CODE</button><div id="codeMessage" class="notice" aria-live="polite">Try a code to get bonus TV!</div>
+      <div id="ownerCodeTools" style="display:none;border:1px solid #8b5cf6;border-radius:14px;padding:16px;margin-top:20px">
+      <hr style="border-color:#4b365f;margin:0 0 20px">
+      <h2>👑 Owner Only: Create Codes</h2>
+      <p class="small">Only available while your owner admin panel is unlocked.</p>
+      <label for="newCode">Code name</label><input id="newCode" placeholder="Your code" maxlength="32">
+      <label for="newReward">TV reward</label><input id="newReward" type="number" min="1" max="100000000" value="1000">
+      <button class="action" id="createCode">CREATE CODE</button>
+      <div id="codeList"></div>
+      </div>
+    </div>
+    <div class="section" id="achievements">
+      <h2>🏆 Achievements</h2>
+      <p class="small">Complete challenges to collect achievement badges. Your unlocked achievements are saved in this browser.</p>
+      <div class="notice" id="achievementNotice" aria-live="polite">Keep playing to unlock your first achievement!</div>
+      <div class="shop-grid" id="achievementList"></div>
+    </div>
+
+    <div class="section" id="chat">
+      <h2>💬 Global Live Chat</h2>
+      <p class="small">Chat with other TvClicker players. Messages are shared live and limited to 300 characters.</p>
+      <div class="notice" style="margin-bottom:12px">
+        <label for="usernameInput">Your username (3–20 letters, numbers, or underscores)</label>
+        <div class="row"><input id="usernameInput" maxlength="20" placeholder="Choose a username"><button class="action" id="saveUsername" type="button">SAVE USERNAME</button></div>
+        <div id="usernameStatus" class="small" aria-live="polite">Loading your player profile…</div>
+      </div>
+      <div id="chatStatus" class="notice">Connecting to chat…</div>
+      <div id="chatMessages" aria-live="polite" style="height:300px;overflow-y:auto;background:#24170f;border:1px solid #93623b;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px"></div>
+      <label for="chatInput">Message</label>
+      <textarea id="chatInput" maxlength="300" rows="3" placeholder="Say hello to the TvClicker players…" style="width:100%;resize:vertical;background:#2a170e;border:1px solid #a8794d;color:#fff4df;border-radius:10px;padding:12px;font:inherit"></textarea>
+      <div class="row"><span id="chatCount" class="small">0 / 300</span><button class="action" id="sendChat" type="button">SEND MESSAGE</button></div>
+    </div>
+
+    <div class="section" id="leaderboard">
+      <h2>🌐 Global Leaderboards</h2>
+      <p class="small">Rankings update from player sessions connected to Supabase.</p>
+      <div class="row" style="margin:10px 0">
+        <button class="action" data-board="played">Most Played</button>
+        <button class="action" data-board="tv">Most TV</button>
+        <button class="action" data-board="second">Most Per Second</button>
+        <button class="action" data-board="click">Most Per Click</button>
+      </div>
+      <div id="leaderboardStatus" class="notice">Connecting to global leaderboard…</div>
+      <div id="leaderboardList"></div>
+      <button class="action" id="refreshLeaderboard" style="margin-top:12px">Refresh Leaderboards</button>
+    </div>
+
+    <div class="section" id="wheel"><h2>🎡 TV Prize Wheel</h2><p class="small">Free spins only. Win bonus TV points—no real-money bets or purchases.</p><div class="wheel-wrap"><div class="wheel-pointer">▼</div><div id="prizeWheel" class="prize-wheel"><span>📺</span><span>✨</span><span>🎁</span><span>💎</span><span>⚡</span><span>🌟</span><span>🎉</span><span>👑</span></div></div><div class="notice" id="wheelStatus">One free spin every 5 minutes.</div><button class="action" id="spinWheel">SPIN FREE WHEEL</button><p class="small" id="wheelTimer">Ready to spin!</p></div>
+    <div class="section" id="savedata"><h2>💾 Save & Restore Game Data</h2><p class="small">Download a backup, upload a previous TvClicker backup, or reset your progress.</p><button class="action" id="downloadSave">⬇️ DOWNLOAD SAVE DATA</button><label for="uploadSave">Upload a TvClicker save file (.json)</label><input id="uploadSave" type="file" accept=".json,application/json"><button class="action danger" id="resetSave">RESET ALL GAME DATA</button><div id="saveDataStatus" class="notice">Your game also autosaves in this browser.</div></div>
+    <div class="section" id="stats">
+      <h2>📊 Player Statistics</h2>
+      <div class="stat-row"><span>Total TV earned</span><strong id="statTotal">0</strong></div>
+      <div class="stat-row"><span>Click power</span><strong id="statClick">1</strong></div>
+      <div class="stat-row"><span>Auto TV / second</span><strong id="statAuto">0</strong></div>
+      <div class="stat-row"><span>Multiplier</span><strong id="statMult">x1</strong></div>
+      <div class="stat-row"><span>Upgrades purchased</span><strong id="statUpgrades">0</strong></div>
+      <div class="stat-row"><span>Codes redeemed</span><strong id="statCodes">0</strong></div>
+      <div class="stat-row"><span>Rebirths</span><strong id="statRebirths">0</strong></div>
+    </div>
+
+    <div class="section" id="admin">
+      <h2>🔐 Owner Admin Panel (Local Demo)</h2>
+      <div class="notice" id="supabaseSecretStatus">Checking Supabase admin-secret configuration…</div><div class="notice">Owner access is verified by a Supabase Edge Function. Your admin code is stored as a GitHub Actions secret and is never included in this page's source code.</div>
+      <div id="adminLogin">
+        <label for="adminPin">Owner PIN</label>
+        <input id="adminPin" type="password" inputmode="text" autocomplete="off" maxlength="64" placeholder="Enter your TvClicker admin code">
+        <button class="action" id="adminUnlock">SET PIN / UNLOCK</button>
+        <p id="adminMessage" class="small" aria-live="polite">Demo only: this PIN protects this browser view, not the website from code inspection.</p>
+      </div>
+      <div id="adminDashboard" style="display:none">
+        <div class="stat-row"><span>Current player TV</span><strong id="adminTV">0</strong></div>
+        <div class="stat-row"><span>Total TV earned</span><strong id="adminTotal">0</strong></div>
+        <div class="stat-row"><span>Upgrades owned</span><strong id="adminUpgrades">0</strong></div>
+        <div class="stat-row"><span>Rebirths</span><strong id="adminRebirths">0</strong></div>
+        <div class="stat-row"><span>Redeemed codes</span><strong id="adminCodes">0</strong></div>
+        <h3>Owner tools</h3>
+        <label for="adminGrant">Give this browser TV</label>
+        <input id="adminGrant" type="number" min="1" max="1000000000" value="1000">
+        <button class="action" id="adminGive">GIVE TV</button>
+        <div class="row">
+          <div><label for="adminSetBalance">Set TV balance</label><input id="adminSetBalance" type="number" min="0" max="9007199254740991" placeholder="New balance"></div>
+          <div><label for="adminTake">Remove TV</label><input id="adminTake" type="number" min="1" max="9007199254740991" placeholder="Amount to remove"></div>
+        </div>
+        <button class="action" id="adminSet">SET BALANCE</button>
+        <button class="action danger" id="adminTakeButton">TAKE TV</button>
+        <h3>📢 Announcement</h3>
+        <p class="small">Show a message banner in this browser's game.</p>
+        <label for="adminAnnouncement">Announcement message</label>
+        <input id="adminAnnouncement" maxlength="120" placeholder="Example: Double TV event starts now!">
+        <button class="action" id="adminAnnounce">POST ANNOUNCEMENT</button>
+        <button class="action danger" id="adminClearAnnouncement">CLEAR ANNOUNCEMENT</button>
+        <div class="notice" id="adminAnnouncementStatus">No announcement posted.</div>
+        <h3>💾 Game Data</h3>
+        <button class="action" id="adminBackup">DOWNLOAD SAVE BACKUP</button>
+        <button class="action danger" id="adminReset">RESET THIS BROWSER'S GAME</button>
+        <p class="small">Reset permanently clears this browser's saved progress. Backup first if you want to keep it.</p>
+        <h3>🌍 Global Event Control</h3>
+        <p class="small">Start an event for this game/browser. A true event shared by every player needs a server.</p>
+        <label for="globalEventName">Event</label>
+        <select id="globalEventName"><option value="Thanksgiving Eating">🦃 Thanksgiving Eating (10x minimum)</option><option value="Trick-or-Treat">🎃 Trick-or-Treat (10x)</option></select>
+        <div class="row">
+          <div><label for="globalEventMinutes">Duration (minutes)</label><input id="globalEventMinutes" type="number" min="1" max="60" value="5"></div>
+          <div><label for="globalEventMultiplier">TV multiplier (1–10)</label><input id="globalEventMultiplier" type="number" min="1" max="10" value="3"></div>
+        </div>
+        <div class="notice" id="globalEventStatus">No global event is running.</div>
+        <button class="action" id="startGlobalEvent">🚀 START GLOBAL EVENT</button>
+        <button class="action danger" id="stopGlobalEvent">STOP EVENT</button>
+        <button class="action" id="adminRefresh" style="margin-left:6px">REFRESH STATS</button>
+        <button class="action danger" id="adminLock" style="margin-left:6px">LOCK PANEL</button>
+      </div>
+    </div>
+
+    <div class="section" id="security">
+      <h2>🛡️ Game Safety Checks</h2>
+      <div class="security"><span style="font-size:1.7rem">🛡️</span><div><strong>Server-side checks active</strong><div class="small">Username changes, chat moderation, and leaderboard writes are checked by Supabase before they are saved.</div></div></div>
+      <p class="small">The backend blocks direct browser writes to chat and leaderboard tables and checks suspicious stat changes. A static browser game still cannot make every local click or purchase tamper-proof. Browser extensions cannot be reliably detected from a website; TvClicker does not scan extensions or fingerprint devices.</p>
+    </div>
+  </section>
+</div>
+</div>
+
+<div id="rebirthScare" role="alert" aria-live="assertive">
+  <div class="scare-face" aria-hidden="true">👹</div>
+  <div class="scare-title">SIGNAL LOST!</div>
+  <div class="scare-sub">You reached Rebirth 2... spooky!</div>
+</div>
+
+<footer>TvClicker TV Clicker • Supabase-powered shared events and announcements • Player progress saves in this browser</footer>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./supabase-config.js"></script>
+<script>
+(() => {
+  "use strict";
+  const SAVE_KEY = "tvclicker_v1";
+  const items = [
+    {name:"🍭 Sweet Gloves",desc:"+1 TV per click",base:10,kind:"click",amount:1},
+    {name:"🤖 Auto Clicker",desc:"+1 TV per second",base:50,kind:"auto",amount:1},
+    {name:"🍫 Chocolate Machine",desc:"+5 TV per click",base:150,kind:"click",amount:5},
+    {name:"✨ TV Multiplier",desc:"Double your clicking power",base:300,kind:"mult",amount:2},
+    {name:"👑 Golden Finger",desc:"+25 TV per click",base:750,kind:"click",amount:25},
+    {name:"🏭 TV Factory",desc:"+10 TV per second",base:1200,kind:"auto",amount:10},
+    {name:"🧁 Cupcake Crew",desc:"+50 TV per second",base:5000,kind:"auto",amount:50},
+    {name:"📺 TV Cannon",desc:"+100 TV per click",base:12000,kind:"click",amount:100},
+    {name:"🚀 Sugar Rocket",desc:"+500 TV per second",base:50000,kind:"auto",amount:500},
+    {name:"💎 Diamond TV",desc:"+1,000 TV per click",base:150000,kind:"click",amount:1000},
+    {name:"🌈 Rainbow Factory",desc:"+5,000 TV per second",base:500000,kind:"auto",amount:5000},
+    {name:"👑 TV Overlord",desc:"+10,000 TV per click",base:1500000,kind:"click",amount:10000},
+    {name:"🛸 Alien TV Lab",desc:"+25,000 TV per second",base:5000000,kind:"auto",amount:25000},
+    {name:"⚡ Lightning Lollipop",desc:"+50,000 TV per click",base:12000000,kind:"click",amount:50000},
+    {name:"🏰 Sugar Kingdom",desc:"+100,000 TV per second",base:30000000,kind:"auto",amount:100000},
+    {name:"🔥 Firecracker Fudge",desc:"+250,000 TV per click",base:75000000,kind:"click",amount:250000},
+    {name:"🌌 Galaxy Gumball",desc:"+500,000 TV per second",base:200000000,kind:"auto",amount:500000},
+    {name:"💫 Cosmic Clicker",desc:"Double your total multiplier",base:500000000,kind:"mult",amount:2},
+    {name:"🐉 Dragon TV Mine",desc:"+2,500,000 TV per second",base:1500000000,kind:"auto",amount:2500000},
+    {name:"☀️ Solar Sugar Tap",desc:"+5,000,000 TV per click",base:4000000000,kind:"click",amount:5000000},
+    {name:"🪐 Planet of Sweets",desc:"+25,000,000 TV per second",base:15000000000,kind:"auto",amount:25000000},
+    {name:"🏆 Infinite TV Crown",desc:"Double your total multiplier",base:50000000000,kind:"mult",amount:2},
+    {name:"🌋 Volcano TV Core",desc:"+50,000,000 TV per second",base:125000000000,kind:"auto",amount:50000000},
+    {name:"🧿 Mystic Sugar Eye",desc:"+100,000,000 TV per click",base:300000000000,kind:"click",amount:100000000},
+    {name:"🦾 Titan TV Bot",desc:"+250,000,000 TV per second",base:750000000000,kind:"auto",amount:250000000},
+    {name:"🌠 Stardust Lollipop",desc:"Double your total multiplier",base:1800000000000,kind:"mult",amount:2},
+    {name:"🏙️ TV Mega City",desc:"+1,000,000,000 TV per second",base:5000000000000,kind:"auto",amount:1000000000},
+    {name:"🌀 Quantum TV Clicker",desc:"+2,500,000,000 TV per click",base:12500000000000,kind:"click",amount:2500000000},
+    {name:"👾 Galactic Gummy Factory",desc:"+10,000,000,000 TV per second",base:40000000000000,kind:"auto",amount:10000000000},
+    {name:"💜 Hollow Purple Pop",desc:"Triple your total multiplier",base:100000000000000,kind:"mult",amount:3},
+    {name:"🐲 Ultimate Dragon Treat",desc:"+50,000,000,000 TV per second",base:300000000000000,kind:"auto",amount:50000000000},
+    {name:"🌌 Universe TV Engine",desc:"+100,000,000,000 TV per click",base:750000000000000,kind:"click",amount:100000000000},
+    {name:"♾️ Infinite Broadcast Tower",desc:"Double your total multiplier",base:1500000000000000,kind:"mult",amount:2}
+  ];
+  const defaultCodes = [
+    {code:"TVONEMORENOLESS",reward:10000000000000,limited:true},
+    {code:"TVSTART",reward:1000},{code:"SIGNALBOOST",reward:5000},{code:"CHANNEL10",reward:10000},
+    {code:"REMOTEPOWER",reward:25000},{code:"STATICFREE",reward:50000},{code:"BROADCAST",reward:100000},
+    {code:"TVCREW",reward:250000},{code:"NIGHTSHIFT",reward:500000},{code:"MEGASCREEN",reward:1000000}
+  ];
+  let state = {
+    TV:0n,total:0n,clickPower:1n,auto:0n,multiplier:1n,
+    owned:Array(items.length).fill(0),codes:defaultCodes,
+    redeemed:[],achievements:[],rebirths:0,playedSeconds:0,wheelReadyAt:0,nextEventRoll:Date.now()+600000,activeRandomEvent:null,TVBoostUntil:0,announcement:"",globalEvent:null
+  };
+  const $ = id => document.getElementById(id);
+  const toBig = value => { try { const str=String(value??0).trim(); return /^-?\d+$/.test(str)?BigInt(str):0n; } catch { return 0n; } };
+  const safeInt = n => toBig(n)>=0n;
+  let sb = null, currentUser = null, globalChannel = null, leaderboardChannel = null;
+  let adminCode = "", currentUsername = "";
+  let leaderboardMode="played", statsSyncTimer=0, lastStatsSync=0, chatChannel=null, lastChatSent=0;
+  function playerLabel(){return currentUsername || (currentUser?"Player-"+currentUser.id.slice(0,6):"Guest");}
+  async function loadPlayerProfile(){
+    if(!sb||!currentUser)return;
+    const {data,error}=await sb.functions.invoke("player-api",{body:{action:"get_profile"}});
+    if(error||!data?.success){$("usernameStatus").textContent=data?.error||error?.message||"Could not load profile.";if(data?.banned){$("chatStatus").textContent="This account is permanently banned from online features.";$("sendChat").disabled=true;}return;}
+    currentUsername=data.username||("Player-"+currentUser.id.slice(0,6));
+    $("usernameInput").value=currentUsername;
+    $("headerPlayerName").textContent="Playing as "+currentUsername;
+    $("usernameStatus").textContent="Signed in as "+currentUsername+".";
+    if(data.banned){$("chatStatus").textContent="This account is banned from online features.";$("sendChat").disabled=true;}
+    else if(data.timeoutUntil&&new Date(data.timeoutUntil).getTime()>Date.now())$("chatStatus").textContent="Chat timeout active until "+new Date(data.timeoutUntil).toLocaleTimeString()+".";
+  }
+  async function saveUsername(){
+    if(!sb){$("usernameStatus").textContent="Connect to Supabase before changing your username.";return;}
+    const username=$("usernameInput").value.trim();
+    const {data,error}=await sb.functions.invoke("player-api",{body:{action:"update_username",username}});
+    if(error||!data?.success){$("usernameStatus").textContent=data?.error||error?.message||"Username could not be changed.";return;}
+    currentUsername=data.username;$("usernameInput").value=currentUsername;
+    $("headerPlayerName").textContent="Playing as "+currentUsername;
+    $("usernameStatus").textContent="Username saved as "+currentUsername+".";
+    await syncPlayerStats();await refreshLeaderboard();
+  }
+  function renderLeaderboardRows(rows){
+    const list=$("leaderboardList");list.innerHTML="";
+    if(!rows||!rows.length){list.innerHTML='<div class="notice">No leaderboard entries yet. Be the first!</div>';return;}
+    rows.forEach((r,i)=>{
+      const row=document.createElement("div");row.className="stat-row";
+      const name=document.createElement("span");name.textContent=(i+1)+". "+(r.display_name||"Player");
+      const value=document.createElement("strong");
+      const n=leaderboardMode==="played"?Math.floor(r.played_seconds||0)+" sec":formatNumber(toBig(r[leaderboardMode==="tv"?"total_tv":leaderboardMode==="second"?"tv_per_second":"tv_per_click"]||0));
+      value.textContent=n;row.append(name,value);list.append(row);
+    });
+  }
+  async function refreshLeaderboard(){
+    if(!sb){$("leaderboardStatus").textContent="Supabase is not connected. Add your Project URL and publishable key.";return;}
+    $("leaderboardStatus").textContent="Loading global rankings…";
+    const column=leaderboardMode==="played"?"played_seconds":leaderboardMode==="tv"?"total_tv":leaderboardMode==="second"?"tv_per_second":"tv_per_click";
+    const {data,error}=await sb.from("player_stats").select("display_name,played_seconds,total_tv,tv_per_second,tv_per_click").order(column,{ascending:false}).limit(10);
+    if(error){$("leaderboardStatus").textContent="Leaderboard setup needed: run the updated supabase/schema.sql in SQL Editor. ("+error.message+")";return;}
+    $("leaderboardStatus").textContent="Top 10 players • "+({played:"Most Played",tv:"Most TV",second:"Most Per Second",click:"Most Per Click"}[leaderboardMode]);
+    renderLeaderboardRows(data||[]);
+  }
+  async function syncPlayerStats(){
+    if(!sb||!currentUser)return;
+    const now=Date.now(),elapsed=lastStatsSync?Math.max(0,Math.floor((now-lastStatsSync)/1000)):0;
+    lastStatsSync=now;
+    if(elapsed>0)state.playedSeconds=(state.playedSeconds||0)+Math.min(elapsed,90);
+    const payload={action:"sync_stats",played_seconds:state.playedSeconds||0,total_tv:state.total.toString(),tv_per_second:(state.auto*state.multiplier).toString(),tv_per_click:(state.clickPower*state.multiplier).toString()};
+    const {data,error}=await sb.functions.invoke("player-api",{body:payload});
+    if(error||!data?.success)console.warn("Server rejected leaderboard sync:",data?.error||error?.message);
+  }
+  function renderChatMessage(message){
+    const box=$("chatMessages");
+    if(!box||!message)return;
+    const row=document.createElement("div");row.style.cssText="padding:8px 10px;border-radius:9px;background:#4a2b1b;border:1px solid #93623b;overflow-wrap:anywhere";
+    const head=document.createElement("div");head.style.cssText="display:flex;justify-content:space-between;gap:10px;color:#ffe3a1;font-size:.78rem";
+    const who=document.createElement("strong");who.textContent=String(message.display_name||"Player").slice(0,24);
+    const when=document.createElement("span");when.textContent=message.created_at?new Date(message.created_at).toLocaleTimeString():"now";
+    const body=document.createElement("div");body.style.cssText="white-space:pre-wrap;color:#fff4df;margin-top:4px";body.textContent=String(message.message||"").slice(0,300);
+    head.append(who,when);row.append(head,body);box.append(row);
+    while(box.children.length>80)box.removeChild(box.firstChild);
+    box.scrollTop=box.scrollHeight;
+  }
+  async function loadChat(){
+    if(!sb){$("chatStatus").textContent="Supabase is not connected.";return;}
+    const {data,error}=await sb.from("chat_messages").select("id,display_name,message,created_at").order("created_at",{ascending:false}).limit(50);
+    if(error){$("chatStatus").textContent="Chat setup needed: apply the latest schema.sql. "+error.message;return;}
+    $("chatMessages").innerHTML="";(data||[]).reverse().forEach(renderChatMessage);
+    $("chatStatus").textContent="Connected • live messages from TvClicker players";
+  }
+  async function sendChatMessage(){
+    const input=$("chatInput"),message=input.value.trim();
+    if(!message)return;
+    if(!sb||!currentUser){$("chatStatus").textContent="Chat requires Supabase sign-in.";return;}
+    if(Date.now()-lastChatSent<1500){$("chatStatus").textContent="Please wait a moment before sending another message.";return;}
+    lastChatSent=Date.now();$("sendChat").disabled=true;
+    const {data,error}=await sb.functions.invoke("player-api",{body:{action:"send_chat",message:message.slice(0,300)}});
+    $("sendChat").disabled=false;
+    if(error||!data?.success){
+      const reason=data?.error||error?.message||"Message could not be sent.";
+      $("chatStatus").textContent=reason;
+      if(data?.banned)$("sendChat").disabled=true;
+      return;
+    }
+    renderChatMessage(data.message);input.value="";$("chatCount").textContent="0 / 300";
+    $("chatStatus").textContent="Message sent.";
+  }
+  async function checkAdminSecret(){
+    if(!sb){$("supabaseSecretStatus").textContent="Supabase is not connected; cannot check ADMIN_CODE.";return;}
+    try{
+      const {data,error}=await sb.functions.invoke("admin",{body:{action:"status"}});
+      if(error||!data)throw error||new Error("No response");
+      $("supabaseSecretStatus").textContent=data.configured?"✓ Supabase ADMIN_CODE secret detected by the server.":"⚠ Supabase ADMIN_CODE secret is missing.";
+      $("supabaseSecretStatus").className="notice "+(data.configured?"success":"error");
+    }catch(e){$("supabaseSecretStatus").textContent="Could not check Supabase secret status. Deploy the updated admin function."; $("supabaseSecretStatus").className="notice error";}
+  }
+  function applyGlobalState(row){
+    if(!row)return;
+    state.announcement=typeof row.announcement==="string"?row.announcement.slice(0,120):"";
+    const ev=row.active_event;
+    state.globalEvent=ev&&typeof ev.name==="string"&&Number.isFinite(Number(ev.endsAt))?{name:ev.name,multiplier:Number(ev.multiplier)||1,endsAt:Number(ev.endsAt)}:null;
+    render(); updateGlobalEventAdmin();
+  }
+  async function refreshGlobalState(){
+    if(!sb)return;
+    const {data,error}=await sb.from("game_state").select("announcement,active_event").eq("id",1).maybeSingle();
+    if(error){console.warn("Could not load shared game state:",error.message);return;}
+    if(data)applyGlobalState(data);
+  }
+  async function initSupabase(){
+    const cfg=window.TvClicker_SUPABASE_CONFIG||{};
+    if(!cfg.url||!cfg.anonKey||cfg.url.includes("YOUR_")||cfg.anonKey.includes("YOUR_")){
+      $("adminMessage").textContent="Supabase setup needed: add your project URL and anon key in supabase-config.js.";
+      return;
+    }
+    if(!window.supabase||!window.supabase.createClient){
+      $("adminMessage").textContent="Supabase client could not load. Check your internet connection."; return;
+    }
+    try{
+      sb=window.supabase.createClient(cfg.url,cfg.anonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+      let {data:{session}}=await sb.auth.getSession();
+      if(!session){
+        const signed=await sb.auth.signInAnonymously();
+        if(signed.error)throw signed.error;
+        session=signed.data.session;
+      }
+      currentUser=session?.user||null;
+      await loadPlayerProfile();
+      await refreshGlobalState();
+      lastStatsSync=Date.now();
+      await syncPlayerStats();
+      await checkAdminSecret();
+      await refreshLeaderboard();
+      await loadChat();
+      chatChannel=sb.channel("TvClicker-global-chat")
+        .on("postgres_changes",{event:"INSERT",schema:"public",table:"chat_messages"},payload=>{
+          const m=payload.new;
+          if(m&&m.user_id!==currentUser?.id)renderChatMessage(m);
+        }).subscribe();
+      leaderboardChannel=sb.channel("TvClicker-global-leaderboard")
+        .on("postgres_changes",{event:"*",schema:"public",table:"player_stats"},()=>refreshLeaderboard())
+        .subscribe();
+      globalChannel=sb.channel("TvClicker-global-state")
+        .on("postgres_changes",{event:"*",schema:"public",table:"game_state"},payload=>applyGlobalState(payload.new))
+        .subscribe();
+      $("adminMessage").textContent="Supabase connected. Signed in automatically"+(currentUser?" as player "+currentUser.id.slice(0,8):"")+".";
+    }catch(error){
+      console.error("Supabase startup failed:",error);
+      $("adminMessage").textContent="Supabase sign-in failed: "+(error.message||"Check Supabase Auth settings.");
+    }
+  }
+  async function adminRequest(action,payload={}){
+    if(!sb)throw new Error("Supabase is not configured yet.");
+    if(!adminCode)throw new Error("Unlock the owner panel first.");
+    const {data,error}=await sb.functions.invoke("admin",{body:{action,code:adminCode,...payload}});
+    if(error)throw new Error(error.message||"Admin request failed.");
+    if(!data||data.success!==true)throw new Error(data?.error||"Admin request was rejected.");
+    return data;
+  }
+  // Compact display formatting keeps large balances readable without changing saved values.
+  function formatNumber(value){
+    if(typeof value==="bigint") { const n=value<0n?-value:value,sign=value<0n?"-":"",units=["","K","M","B","T","Qa","Qi","Sx","Sp","Oc","No","Dc","Ud","Dd","Td","Qad","Qid","Sxd","Spd","Ocd","Nod"];if(n<1000n)return sign+n.toLocaleString();let group=0,div=1n;while(n>=div*1000n&&group<units.length-1){div*=1000n;group++;}const whole=n/div,decimal=(n%div)*10n/div;return sign+whole.toString()+(decimal?"."+decimal.toString():"")+units[group]; }
+    const n=Number(value);return Number.isFinite(n)?Math.floor(n).toLocaleString():String(value);
+  }
+  function save(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(state,(_,v)=>typeof v==="bigint"?v.toString():v));}catch(e){console.warn("Save failed",e);}}
+  function load(){
+    try{
+      const raw=localStorage.getItem(SAVE_KEY);
+      if(!raw)return;
+      const s=JSON.parse(raw);
+      if(!s || !Array.isArray(s.owned) || !Array.isArray(s.codes) || !Array.isArray(s.redeemed))return;
+      state={...state,...s};
+      for(const key of ["TV","total","clickPower","auto","multiplier"])state[key]=toBig(s[key]??state[key]);
+      const savedCodes=Array.isArray(s.codes)?s.codes:[];
+      state.codes=[...savedCodes,...defaultCodes.filter(c=>!savedCodes.some(old=>old.code===c.code))];
+      state.achievements=Array.isArray(s.achievements)?s.achievements.filter(x=>typeof x==="string"):[];
+      state.owned=Array.from({length:items.length},(_,i)=>Number(s.owned[i])||0);
+      state.rebirths=Number.isSafeInteger(state.rebirths)&&state.rebirths>=0?state.rebirths:0;
+      state.nextEventRoll=Number.isFinite(s.nextEventRoll)&&s.nextEventRoll>Date.now()?s.nextEventRoll:Date.now()+600000;
+      state.activeRandomEvent=s.activeRandomEvent&&typeof s.activeRandomEvent.name==="string"&&Number.isFinite(s.activeRandomEvent.endsAt)?s.activeRandomEvent:null;
+      state.TVBoostUntil=Number.isFinite(s.TVBoostUntil)&&s.TVBoostUntil>=0?s.TVBoostUntil:0;
+      state.announcement=typeof s.announcement==="string"?s.announcement.slice(0,120):"";
+    }catch(e){}
+  }
+  function validate(){
+    const fields=["TV","total","clickPower","auto","multiplier"];
+    for(const key of fields)state[key]=toBig(state[key]);
+    state.owned=state.owned.map(n=>safeInt(n)?n:0);
+    if(state.multiplier<1n) state.multiplier=1n;
+    if(state.clickPower<1n) state.clickPower=1n;
+    return true;
+  }
+  function eventFactor(){const random=state.activeRandomEvent&&Date.now()<state.activeRandomEvent.endsAt?Math.max(10,state.activeRandomEvent.multiplier):1;const global=state.globalEvent&&Date.now()<state.globalEvent.endsAt?state.globalEvent.multiplier:1;return BigInt(Math.max(1,Math.floor(random*global)));}
+  function renderAnnouncement(){const banner=$("announcementBanner");const message=state.announcement||"";banner.textContent=message?"📢 TVCLICKER ANNOUNCEMENT: "+message:"";banner.style.display=message?"block":"none";}
+  function clickTV(){
+    const gain=state.clickPower*state.multiplier*eventFactor();
+    state.TV+=gain;state.total+=gain;render();save();
+    if(sb&&Date.now()-lastStatsSync>30000)syncPlayerStats();
+  }
+  function price(item,index){const count=Math.min(10000,Math.max(0,state.owned[index]));return BigInt(item.base)*(165n**BigInt(count))/(100n**BigInt(count));}
+  function rebirthRequirements(){return (state.rebirths+1)*5;}
+  function rebirthCost(){let cost=1000000000000000000n*(5n**BigInt(Math.min(state.rebirths,1000)));for(let i=0;i<items.length;i++){const next=price(items[i],i);if(next*2n>cost)cost=next*2n;}return cost;}
+  function doRebirth(){
+    const cost=rebirthCost();
+    const ownedTotal=state.owned.reduce((a,b)=>a+b,0);
+    if(state.TV<cost||ownedTotal<rebirthRequirements())return;
+    if(!confirm("Rebirth now? You need the TV cost and "+rebirthRequirements()+" total upgrades. Your TV and shop upgrades reset, but your permanent multiplier doubles!"))return;
+    state.TV=0n;
+    state.clickPower=1n;
+    state.auto=0n;
+    state.owned=Array(items.length).fill(0);
+    state.rebirths++;
+    state.multiplier*=2n;
+    render();save();
+    alert("REBIRTH COMPLETE! Your permanent multiplier is now x"+formatNumber(state.multiplier)+"!");
+    if(state.rebirths===2){
+      const scare=$("rebirthScare");
+      if(scare){
+        scare.classList.add("show");
+        window.setTimeout(()=>scare.classList.remove("show"),2400);
+      }
+    }
+  }
+  function buy(index){
+    const item=items[index],cost=price(item,index);
+    if(state.TV<cost)return;
+    state.TV-=cost;state.owned[index]++;
+    if(item.kind==="click")state.clickPower+=BigInt(item.amount);
+    if(item.kind==="auto")state.auto+=BigInt(item.amount);
+    if(item.kind==="mult")state.multiplier*=BigInt(item.amount);
+    if(!validate())return;
+    render();save();
+  }
+  function renderShop(){
+    $("shopItems").innerHTML="";
+    items.forEach((item,i)=>{
+      const cost=price(item,i);
+      const card=document.createElement("article");card.className="item";
+      const h=document.createElement("h3");h.textContent=item.name;
+      const p=document.createElement("p");p.textContent=item.desc;
+      const owned=document.createElement("div");owned.className="small";owned.textContent="Owned: "+state.owned[i];
+      const foot=document.createElement("div");foot.className="item-footer";
+      const priceEl=document.createElement("span");priceEl.className="price";priceEl.textContent=formatNumber(cost)+" 📺";
+      const btn=document.createElement("button");btn.className="action";btn.textContent="BUY";btn.disabled=state.TV<cost;btn.addEventListener("click",()=>buy(i));
+      foot.append(priceEl,btn);card.append(h,p,owned,foot);$("shopItems").append(card);
+    });
+  }
+  function renderCodes(){
+    $("codeList").innerHTML="";
+    state.codes.forEach((entry,i)=>{
+      const row=document.createElement("div");row.className="code-row";
+      const info=document.createElement("div");const strong=document.createElement("strong");strong.textContent=entry.code;
+      const small=document.createElement("div");small.className="small";small.textContent=formatNumber(entry.reward)+" TVs";
+      info.append(strong,small);
+      const del=document.createElement("button");del.className="action";del.textContent="Delete";
+      del.addEventListener("click",()=>{state.codes.splice(i,1);state.redeemed=state.redeemed.filter(x=>x!==entry.code);renderCodes();save();});
+      row.append(info,del);$("codeList").append(row);
+    });
+  }
+  function renderTVEvent(){
+    const now=Date.now();
+    if(state.activeRandomEvent&&now>=state.activeRandomEvent.endsAt){state.activeRandomEvent=null;save();}
+    if(now>=state.nextEventRoll){
+      const roll=Math.random()*100;
+      let event=null;
+      if(roll<30)event={name:"Thanksgiving Eating",multiplier:10,endsAt:now+30000};
+      else if(roll<40)event={name:"Trick-or-Treat",multiplier:10,endsAt:now+30000};
+      if(event){state.activeRandomEvent=event;state.announcement="";addFeed((event.name.includes("Trick")?"🎃":"🦃")+" "+event.name+" started! x10 TV for 30 seconds.");}
+      state.nextEventRoll=now+600000;save();
+    }
+    const status=$("TVEventStatus"),timer=$("TVEventTimer");
+    if(state.globalEvent&&now>=state.globalEvent.endsAt){state.globalEvent=null;save();}
+    const active=state.globalEvent||(state.activeRandomEvent&&now<state.activeRandomEvent.endsAt?state.activeRandomEvent:null);
+    const fx=$("fullScreenEventFX"),decor=$("eventDecor");
+    if(fx&&decor){
+      fx.classList.toggle("active",!!active);
+      const isTrick=!!active&&active.name.includes("Trick"),isThanksgiving=!!active&&active.name.includes("Thanksgiving");
+      const symbols=active?(isTrick?["🎃","🦇","🍬","✨","👻","🕸️","🦇","🎃","🍬","👻","✨","🕸️"]:isThanksgiving?["🍂","🦃","🌽","✨","🍁","🥧","🍂","🍁","🦃","🌽","🥧","✨"]:["🎉","⭐","🎊","✨","🌟","🎈","🎉","⭐","🎊","🎈","✨","🌟"]):[];
+      decor.innerHTML=symbols.map((symbol,i)=>`<span style="--x:${(i*37)%100}%;--duration:${7+(i%5)*1.7}s;--delay:${-(i%8)*1.1}s;--drift:${((i%2)?1:-1)*(20+(i%4)*18)}px">${symbol}</span>`).join("");
+    }
+    if(active){
+      const left=Math.max(0,Math.ceil((active.endsAt-now)/1000));
+      status.textContent=(active.name==="Thanksgiving Eating"?"🦃":"🎃")+" "+active.name+" IS HERE! All TV earnings are x"+Math.max(10,active.multiplier)+"!";
+      timer.textContent="x"+Math.max(10,active.multiplier)+" TV ACTIVE — "+String(Math.floor(left/60)).padStart(2,"0")+":"+String(left%60).padStart(2,"0")+" left";
+      status.style.color="#16834a";
+    }else{
+      const left=Math.max(0,Math.ceil((state.nextEventRoll-now)/1000));
+      status.textContent="🦃 Thanksgiving Eating: 30% chance • 🎃 Trick-or-Treat: 10% chance. Both give x10 TV.";
+      timer.textContent="Next random event check in "+String(Math.floor(left/60)).padStart(2,"0")+":"+String(left%60).padStart(2,"0");
+      status.style.color="";
+    }
+    renderAnnouncement();
+  }
+  const achievementDefs=[
+    {id:"first-TV",icon:"📺",name:"First Sweet",desc:"Earn your first 100 TV.",test:()=>state.total>=100n},
+    {id:"collector",icon:"🧺",name:"TV Collector",desc:"Earn 10,000 TV in total.",test:()=>state.total>=10000n},
+    {id:"millionaire",icon:"💎",name:"TV Millionaire",desc:"Earn 1,000,000 TV in total.",test:()=>state.total>=1000000n},
+    {id:"billionaire",icon:"👑",name:"TV Billionaire",desc:"Earn 1 billion TV in total.",test:()=>state.total>=1000000000n},
+    {id:"upgrade-one",icon:"🛒",name:"Shopper",desc:"Buy your first upgrade.",test:()=>state.owned.reduce((a,b)=>a+b,0)>=1},
+    {id:"upgrade-ten",icon:"🏭",name:"Upgrade Expert",desc:"Own 10 upgrades at once.",test:()=>state.owned.reduce((a,b)=>a+b,0)>=10},
+    {id:"code-redeemer",icon:"🎁",name:"Code Cracker",desc:"Redeem your first code.",test:()=>state.redeemed.length>=1},
+    {id:"rebirth-one",icon:"🌟",name:"Fresh Start",desc:"Complete your first rebirth.",test:()=>state.rebirths>=1},
+    {id:"rebirth-five",icon:"🚀",name:"Rebirth Legend",desc:"Complete 5 rebirths.",test:()=>state.rebirths>=5}
+  ];
+  function renderAchievements(){
+    const list=$("achievementList");if(!list)return;
+    list.innerHTML="";
+    achievementDefs.forEach(a=>{
+      const unlocked=state.achievements.includes(a.id);
+      const card=document.createElement("article");card.className="achievement "+(unlocked?"unlocked":"locked");
+      const medal=document.createElement("span");medal.className="medal";medal.textContent=unlocked?a.icon:"🔒";
+      const info=document.createElement("div");const name=document.createElement("strong");name.textContent=a.name+(unlocked?" ✓":"");
+      const desc=document.createElement("p");desc.textContent=a.desc;info.append(name,desc);card.append(medal,info);list.append(card);
+    });
+    $("achievementNotice").textContent=state.achievements.length+" / "+achievementDefs.length+" achievements unlocked";
+  }
+  function checkAchievements(){
+    const newly=[];
+    achievementDefs.forEach(a=>{if(!state.achievements.includes(a.id)&&a.test()){state.achievements.push(a.id);newly.push(a);}});
+    renderAchievements();
+    if(newly.length){
+      const names=newly.map(a=>a.icon+" "+a.name).join(" • ");
+      $("achievementNotice").textContent="🏆 Achievement unlocked: "+names;
+      save();
+    }
+  }
+  function render(){
+    renderTVEvent();
+    checkAchievements();
+    $("TV").textContent=formatNumber(state.TV)+" 📺";
+    $("perClick").textContent="+"+formatNumber(state.clickPower*state.multiplier)+" per click";
+    $("perSecond").textContent=formatNumber(state.auto*state.multiplier)+" per second";
+    $("total").textContent=formatNumber(state.total);
+    $("statTotal").textContent=formatNumber(state.total);
+    $("statClick").textContent=formatNumber(state.clickPower*state.multiplier);
+    $("statAuto").textContent=formatNumber(state.auto*state.multiplier);
+    $("statMult").textContent="x"+formatNumber(state.multiplier);
+    $("statUpgrades").textContent=state.owned.reduce((a,b)=>a+b,0);
+    $("statCodes").textContent=state.redeemed.length;
+    $("statRebirths").textContent=state.rebirths;
+    const rc=rebirthCost();
+    $("rebirthCost").textContent=formatNumber(rc)+" 📺";
+    const req=rebirthRequirements(),ownedNow=state.owned.reduce((a,b)=>a+b,0),ready=state.TV>=rc&&ownedNow>=req;
+    $("rebirthButton").disabled=!ready;
+    $("rebirthButton").textContent=ready?"🌟 REBIRTH NOW — PERMANENT x2 BONUS":"REBIRTH — NEED "+formatNumber(rc>state.TV?rc-state.TV:0n)+" TV + "+Math.max(0,req-ownedNow)+" UPGRADES";
+    $("rebirthInfo").textContent="Rebirths: "+state.rebirths+" • Permanent bonus: x"+formatNumber(state.multiplier)+" • Requires "+req+" upgrades";
+    renderShop();renderCodes();
+  }
+  $("TVButton").addEventListener("click",clickTV);
+  function addFeed(message){const feed=$("eventFeed");if(!feed)return;const entry=document.createElement("div");entry.className="feed-entry";entry.textContent=new Date().toLocaleTimeString()+" — "+message;feed.prepend(entry);while(feed.children.length>8)feed.removeChild(feed.lastChild);}
+  function downloadGameSave(){const exportState={...state};delete exportState.codes;delete exportState.redeemed;exportState.redeemedCount=state.redeemed.length;const data=JSON.stringify(exportState,(_,v)=>typeof v==="bigint"?v.toString():v,2);const blob=new Blob([data],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="TvClicker-save.json";a.click();URL.revokeObjectURL(url);$("saveDataStatus").textContent="Save downloaded. Promo-code definitions and code names are not included.";}
+  $("downloadSave").addEventListener("click",downloadGameSave);
+  $("adminBackup").addEventListener("click",downloadGameSave);
+  $("uploadSave").addEventListener("change",async e=>{const file=e.target.files?.[0];if(!file)return;try{const imported=JSON.parse(await file.text());if(!imported||!Array.isArray(imported.owned))throw new Error("This is not a valid TvClicker save file.");if(!confirm("Replace your current TvClicker progress with this uploaded save? Download a backup first if needed."))return;for(const k of ["TV","total","clickPower","auto","multiplier"])imported[k]=toBig(imported[k]);const oldCodes=Array.isArray(imported.codes)?imported.codes:defaultCodes;const oldRedeemed=Array.isArray(imported.redeemed)?imported.redeemed:defaultCodes.map(c=>c.code);state={...state,...imported,redeemed:oldRedeemed};state.owned=Array.from({length:items.length},(_,i)=>Number(imported.owned[i])||0);state.codes=[...oldCodes,...defaultCodes.filter(c=>!oldCodes.some(x=>x.code===c.code))];delete state.redeemedCount;validate();render();save();$("saveDataStatus").textContent="Save uploaded. Built-in promo codes are locked on imported code-free saves to prevent repeat claims.";}catch(err){$("saveDataStatus").textContent=err.message||"Could not read that save file.";}e.target.value="";});
+  $("resetSave").addEventListener("click",()=>{if(!confirm("Reset ALL TvClicker progress in this browser? Download a backup first if needed."))return;localStorage.removeItem(SAVE_KEY);location.reload();});
+  $("adminBackup").addEventListener("click",downloadGameSave);
+  let wheelRotation=0;
+  $("spinWheel").addEventListener("click",()=>{const now=Date.now();if(now<(state.wheelReadyAt||0)){$("wheelStatus").textContent="Your free spin is still recharging.";return;}const prizes=[{label:"+100 TV",value:100n,weight:32},{label:"+1,000 TV",value:1000n,weight:25},{label:"+10,000 TV",value:10000n,weight:18},{label:"+100,000 TV",value:100000n,weight:12},{label:"+1,000,000 TV",value:1000000n,weight:7},{label:"+10,000,000 TV",value:10000000n,weight:4},{label:"x2 multiplier",mult:true,weight:2}];let roll=Math.random()*100,prize=prizes[0];for(const item of prizes){roll-=item.weight;if(roll<=0){prize=item;break;}}wheelRotation+=1440+Math.floor(Math.random()*360);$("prizeWheel").style.transform=`rotate(${wheelRotation}deg)`;if(prize.mult)state.multiplier*=2n;else{state.TV+=prize.value;state.total+=prize.value;}state.wheelReadyAt=now+300000;$("wheelStatus").textContent="🎉 You won "+prize.label+"!";$("wheelTimer").textContent="Next free spin in 5 minutes.";addFeed("🎡 Prize Wheel: "+prize.label);render();save();});
+  function refreshWheel(){const left=Math.max(0,(state.wheelReadyAt||0)-Date.now());$("spinWheel").disabled=left>0;$("wheelTimer").textContent=left?"Free spin in "+Math.ceil(left/60000)+" minute(s).":"Your free spin is ready!";}
+
+  $("saveUsername").addEventListener("click",saveUsername);
+  $("usernameInput").addEventListener("keydown",event=>{if(event.key==="Enter"){event.preventDefault();saveUsername();}});
+  $("sendChat").addEventListener("click",sendChatMessage);
+  $("chatInput").addEventListener("input",()=>{$("chatCount").textContent=$("chatInput").value.length+" / 300";});
+  $("chatInput").addEventListener("keydown",event=>{if(event.key==="Enter"&&!event.shiftKey){event.preventDefault();sendChatMessage();}});
+  document.querySelectorAll("[data-board]").forEach(btn=>btn.addEventListener("click",()=>{leaderboardMode=btn.dataset.board;refreshLeaderboard();}));
+  $("refreshLeaderboard").addEventListener("click",refreshLeaderboard);
+  $("rebirthButton").addEventListener("click",doRebirth);
+  document.querySelectorAll(".tab").forEach(btn=>btn.addEventListener("click",()=>{
+    document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b===btn));
+    document.querySelectorAll(".section").forEach(s=>s.classList.toggle("active",s.id===btn.dataset.tab));
+  }));
+  async function redeemEnteredCode(){
+    const typedCode=String($("redeemInput").value||"").normalize("NFKC").toUpperCase().replace(/[\\s-]+/g,"").trim();
+    // Accept both spellings; Supabase stores the original campaign name.
+    const entered=typedCode==="TVNOMORENOLESS"?"TVONEMORENOLESS":typedCode;
+    const msg=$("codeMessage");msg.className="notice";
+    if(!entered){msg.textContent="Enter a code first.";msg.classList.add("error");return;}
+    state.codes=[...(Array.isArray(state.codes)?state.codes:[]),...defaultCodes.filter(c=>!(state.codes||[]).some(old=>String(old.code||"").toUpperCase().replace(/[\\s-]+/g,"")===c.code))];
+    const redeemed=(state.redeemed||[]).some(c=>String(c).toUpperCase().replace(/[\\s-]+/g,"")===entered);
+    if(redeemed){msg.textContent="That code has already been used on this save.";msg.classList.add("error");return;}
+    const found=state.codes.find(x=>String(x.code||"").toUpperCase().replace(/[\\s-]+/g,"")===entered)||defaultCodes.find(x=>x.code===entered);
+    if(!found){msg.textContent="Code not found. Check spelling. Special code: TVNOMORENOLESS (also TVONEMORENOLESS). Other codes: TVSTART, SIGNALBOOST, CHANNEL10, REMOTEPOWER, STATICFREE, BROADCAST, TVCREW, NIGHTSHIFT, MEGASCREEN.";msg.classList.add("error");return;}
+    if(entered==="TVONEMORENOLESS"){
+      if(!sb||!currentUser){msg.textContent="Connect to Supabase and sign in before redeeming this limited code.";msg.classList.add("error");return;}
+      const {data,error}=await sb.rpc("redeem_tv_code",{p_code:entered});
+      if(error||!data?.success){msg.textContent=data?.message||"This code has already been claimed by 10 players or could not be redeemed.";msg.classList.add("error");return;}
+      const reward=10000000000000n;
+      state.TV+=reward;state.total+=reward;
+      // Mega Pack: permanent x2 multiplier plus +1,000 TV per click and +1,000 TV per second.
+      state.multiplier*=2n;state.clickPower+=1000n;state.auto+=1000n;
+      state.redeemed.push(entered);$("redeemInput").value="";
+      msg.textContent="MEGA PACK unlocked! +10T TV, x2 multiplier, +1,000 per click and +1,000 per second!";msg.classList.add("success");
+      render();save();await syncPlayerStats();return;
+    }
+    const baseReward=toBig(found.reward);if(baseReward<=0n){msg.textContent="That code has an invalid reward.";msg.classList.add("error");return;}
+    const reward=baseReward*eventFactor();
+    state.TV+=reward;state.total+=reward;state.redeemed.push(entered);
+    $("redeemInput").value="";msg.textContent="Success! You received "+formatNumber(reward)+" TV!";msg.classList.add("success");
+    render();save();syncPlayerStats();
+  }
+  $("redeemButton").addEventListener("click",redeemEnteredCode);
+  $("redeemInput").addEventListener("keydown",event=>{
+    if(event.key==="Enter"){event.preventDefault();redeemEnteredCode();}
+  });
+  let adminUnlocked = false;
+  $("createCode").addEventListener("click",()=>{
+    if(!adminUnlocked){$("codeMessage").textContent="Only the owner can create codes. Unlock the admin panel first.";return;}
+    const code=$("newCode").value.trim().toUpperCase();
+    const reward=Number($("newReward").value);
+    const msg=$("codeMessage");msg.className="notice";
+    if(!/^[A-Z0-9_-]{2,32}$/.test(code)){msg.textContent="Use 2–32 letters, numbers, hyphens, or underscores.";msg.classList.add("error");return;}
+    if(!Number.isSafeInteger(reward)||reward<1||reward>100000000){msg.textContent="Enter a reward from 1 to 100,000,000.";msg.classList.add("error");return;}
+    if(state.codes.some(x=>x.code===code)){msg.textContent="That code already exists.";msg.classList.add("error");return;}
+    state.codes.push({code,reward});$("newCode").value="";msg.textContent="Code "+code+" created! 🎉";msg.classList.add("success");renderCodes();save();
+  });
+
+  // Admin code is verified by the Supabase Edge Function; never hardcode it here.
+  function updateAdminStats(){
+    $("adminTV").textContent=formatNumber(state.TV)+" 📺";
+    $("adminTotal").textContent=formatNumber(state.total);
+    $("adminUpgrades").textContent=formatNumber(state.owned.reduce((a,b)=>a+b,0));
+    $("adminRebirths").textContent=formatNumber(state.rebirths);
+    $("adminCodes").textContent=formatNumber(state.redeemed.length);
+  }
+  $("adminUnlock").addEventListener("click",async()=>{
+    const pin=$("adminPin").value.trim();
+    const msg=$("adminMessage");
+    if(!pin){msg.textContent="Enter the owner admin code.";return;}
+    try{
+      if(!sb)throw new Error("Connect Supabase first. Check supabase-config.js and reload.");
+      const {data,error}=await sb.functions.invoke("admin",{body:{action:"unlock",code:pin}});
+      if(error||!data?.success)throw new Error(data?.error||error?.message||"Incorrect admin code.");
+      adminCode=pin; adminUnlocked=true;
+      $("ownerCodeTools").style.display="block";
+      $("adminDashboard").style.display="block";
+      msg.textContent="Owner panel unlocked. Admin actions are verified by the server.";
+      updateAdminStats();updateGlobalEventAdmin();
+    }catch(error){adminCode="";adminUnlocked=false;msg.textContent=error.message||"Admin verification failed.";}
+    $("adminPin").value="";
+  });
+  $("adminGive").addEventListener("click",()=>{
+    const amount=toBig($("adminGrant").value);
+    if(amount<1n){$("adminMessage").textContent="Enter a whole-number amount greater than zero.";return;}
+    state.TV+=amount;state.total+=amount;render();save();updateAdminStats();
+    $("adminMessage").textContent="Added "+formatNumber(amount)+" TV to this browser's game.";
+  });
+  $("adminSet").addEventListener("click",()=>{
+    const amount=toBig($("adminSetBalance").value);
+    if(amount<0n){$("adminMessage").textContent="Enter a whole-number balance of zero or more.";return;}
+    state.TV=amount;render();save();updateAdminStats();
+    $("adminMessage").textContent="TV balance set to "+formatNumber(amount)+".";
+  });
+  $("adminTakeButton").addEventListener("click",()=>{
+    const amount=toBig($("adminTake").value);
+    if(amount<1n){$("adminMessage").textContent="Enter a whole number greater than zero.";return;}
+    const removed=amount<state.TV?amount:state.TV;state.TV-=removed;render();save();updateAdminStats();
+    $("adminMessage").textContent="Removed "+formatNumber(removed)+" TV.";
+  });
+  $("adminAnnounce").addEventListener("click",async()=>{
+    const message=$("adminAnnouncement").value.trim();
+    if(!message){$("adminMessage").textContent="Type an announcement first.";return;}
+    try{
+      await adminRequest("set_announcement",{message:message.slice(0,120)});
+      await refreshGlobalState();
+      $("adminAnnouncementStatus").textContent="Announcement posted globally for all connected players.";
+      $("adminMessage").textContent="Global announcement posted.";
+    }catch(error){$("adminMessage").textContent=error.message;}
+  });
+  $("adminClearAnnouncement").addEventListener("click",async()=>{
+    try{
+      await adminRequest("clear_announcement");
+      await refreshGlobalState();
+      $("adminAnnouncementStatus").textContent="No global announcement posted.";
+      $("adminMessage").textContent="Global announcement cleared.";
+    }catch(error){$("adminMessage").textContent=error.message;}
+  });
+  $("adminReset").addEventListener("click",()=>{
+    if(!confirm("Reset ALL TvClicker TV Clicker progress saved in this browser? This cannot be undone."))return;
+    localStorage.removeItem(SAVE_KEY);location.reload();
+  });
+  $("adminRefresh").addEventListener("click",updateAdminStats);
+  $("adminLock").addEventListener("click",()=>{
+    adminUnlocked=false; adminCode="";
+    $("ownerCodeTools").style.display="none";
+    $("adminDashboard").style.display="none";
+    $("adminMessage").textContent="Panel locked. Enter the server-verified admin code to unlock again.";
+  });
+
+  function updateGlobalEventAdmin(){
+    const active=state.globalEvent&&Date.now()<state.globalEvent.endsAt;
+    $("globalEventStatus").textContent=active?"RUNNING: "+state.globalEvent.name+" • x"+state.globalEvent.multiplier+" TV • ends "+new Date(state.globalEvent.endsAt).toLocaleTimeString():"No global event is running.";
+  }
+  $("startGlobalEvent").addEventListener("click",async()=>{
+    const name=$("globalEventName").value.trim()||"TV Station Takeover";
+    const minutes=Number($("globalEventMinutes").value);let multiplier=Number($("globalEventMultiplier").value);
+    if(name==="Thanksgiving Eating"||name==="Trick-or-Treat")multiplier=Math.max(10,multiplier);
+    if(!Number.isInteger(minutes)||minutes<1||minutes>60||!Number.isInteger(multiplier)||multiplier<1||multiplier>10){$("adminMessage").textContent="Choose 1–60 minutes and a 1–10 multiplier (Thanksgiving and Trick-or-Treat are always at least x10).";return;}
+    try{
+      await adminRequest("start_event",{name,minutes,multiplier});
+      await refreshGlobalState();updateGlobalEventAdmin();updateAdminStats();
+      $("adminMessage").textContent="Global event started for all players!";
+    }catch(error){$("adminMessage").textContent=error.message;}
+  });
+  $("stopGlobalEvent").addEventListener("click",async()=>{
+    try{
+      await adminRequest("stop_event");
+      await refreshGlobalState();updateGlobalEventAdmin();
+      $("adminMessage").textContent="Global event stopped for all players.";
+    }catch(error){$("adminMessage").textContent=error.message;}
+  });
+  load();
+  if(!validate())return;
+  render();
+  $("adminAnnouncementStatus").textContent=state.announcement?"Global announcement is showing.":"No global announcement posted.";
+  window.addEventListener("storage",event=>{if(event.key===SAVE_KEY){load();render();}});
+  window.addEventListener("beforeunload",()=>{if(sb&&currentUser)syncPlayerStats();});
+  initSupabase();
+  setInterval(()=>{
+    renderTVEvent();refreshWheel();
+    if(sb&&currentUser&&Date.now()-lastStatsSync>=30000){syncPlayerStats();}
+    if(state.auto<=0n)return;
+    const gain=state.auto*state.multiplier*eventFactor();
+    state.TV+=gain;state.total+=gain;render();save();
+  },1000);
+})();
+</script>
+</body>
+</html>
+<style>
+/* Retro television click target */
+#TVButton{width:clamp(230px,34vw,290px);height:clamp(190px,27vw,230px);border:10px solid #252a35;border-radius:28px;background:linear-gradient(145deg,#687386,#313b4b 60%,#202733);box-shadow:inset 0 0 0 3px #aab4c5,inset 0 0 0 8px #303948,0 10px 0 #111722,0 16px 28px #0009;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;position:relative}
+#TVButton::before{content:"";position:absolute;inset:12px 48px 28px 16px;border-radius:16px;background:linear-gradient(145deg,#8ee5ff,#397fc1 58%,#142c58);border:5px solid #151d2a;box-shadow:inset 0 0 20px #d5f7ff88,0 0 12px #55caff55;z-index:0}
+#TVButton::after{content:"●\A\A●";white-space:pre;position:absolute;right:14px;top:45%;font-size:10px;line-height:24px;color:#f3d58a;text-shadow:0 0 5px #ffe6a5;z-index:2}
+.TV-icon{font-size:clamp(5rem,12vw,7rem);line-height:1;z-index:1;filter:drop-shadow(0 4px 3px #071326aa)}
+#TVButton .ball-label{z-index:1;color:#fff;font-weight:1000;text-shadow:0 2px 5px #071326;letter-spacing:2px}
+#TVButton:active{transform:translateY(5px) scale(.985);box-shadow:inset 0 0 0 3px #aab4c5,inset 0 0 0 8px #303948,0 3px 0 #111722,0 7px 12px #0008}
+</style>
