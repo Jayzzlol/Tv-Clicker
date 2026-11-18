@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TvClicker — Updated</title>
+<style>
+:root{color-scheme:dark;--bg:#160d25;--panel:#28183d;--panel2:#35204e;--accent:#c58cff;--gold:#ffe3a1;--text:#fff8ff;--muted:#d4c4e4}
+*{box-sizing:border-box}body{margin:0;padding:22px;background:radial-gradient(ellipse at top,#42265d,#160d25 65%);color:var(--text);font:16px system-ui,sans-serif}
+main{max-width:1100px;margin:auto}header{text-align:center;margin:8px 0 24px}h1{margin:0;color:var(--gold);font-size:clamp(2rem,6vw,3.4rem)}header p{color:var(--muted)}
+.layout{display:grid;grid-template-columns:minmax(250px,.8fr) minmax(0,1.2fr);gap:24px;align-items:start}
+.panel{background:#28183df2;border:1px solid #674c82;border-radius:20px;padding:24px;box-shadow:0 14px 36px #0005}
+.balance{text-align:center;position:sticky;top:18px}.amount{font-size:clamp(2rem,6vw,3.6rem);font-weight:900;color:var(--gold);overflow-wrap:anywhere;margin:12px 0}
+button,input{font:inherit}button{cursor:pointer;border:0;border-radius:11px;padding:11px 15px;background:linear-gradient(#d7a7ff,#a96be1);color:#21102e;font-weight:850}button:disabled{opacity:.4;cursor:not-allowed}
+#clicker{width:190px;height:190px;border-radius:50%;font-size:3.8rem;margin:18px auto;display:block;background:radial-gradient(circle at 35% 28%,#fff2ff,#d7a7ff 28%,#8e4dc5 75%,#492264);border:7px solid #f1d5ff;box-shadow:0 8px 0 #492264,0 15px 28px #0008;color:white}
+.stats{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;color:var(--muted);font-size:.9rem}.tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px}.tab{flex:1;min-width:120px;background:#3b2752;color:white;border:1px solid #73558e}.tab.active{background:#c58cff;color:#21102e}
+.section{display:none}.section.active{display:block}h2{margin:0 0 16px}.shop{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}.item{background:var(--panel2);border:1px solid #684d82;border-radius:15px;padding:18px;display:flex;flex-direction:column;gap:10px;min-width:0}.item h3{margin:0;color:var(--gold)}.item p{margin:0;color:var(--muted);min-height:42px}.item-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.price{color:var(--gold);font-weight:800;overflow-wrap:anywhere}
+input{width:100%;padding:12px;border-radius:10px;border:1px solid #72578c;background:#170e22;color:white;margin:7px 0 12px}.notice{background:#3b2850;border:1px solid #684d82;border-radius:12px;padding:14px;margin:14px 0;color:var(--muted)}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.row>*{flex:1}.entry{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #523b68}.entry:last-child{border:0}.small{font-size:.85rem;color:var(--muted)}
+@media(max-width:760px){body{padding:12px}.layout{grid-template-columns:1fr;gap:18px}.panel{padding:18px}.balance{position:static}}
+</style>
+</head>
+<body>
+<main>
+<header><h1>📺 TvClicker</h1><p>Tap the TV, collect points, and build your station.</p></header>
+<div class="layout">
+<section class="panel balance">
+  <strong>YOUR TV POINTS</strong>
+  <div class="amount" id="balance">0 TV</div>
+  <div class="stats"><span id="perClick">+1 / click</span><span id="perSecond">0 / sec</span></div>
+  <button id="clicker" aria-label="Earn TV points">📺</button>
+  <div class="notice">Maximum balance: <strong>1,000 Qi</strong><br>Maximum upgrade power: <strong>500 Qi</strong></div>
+  <div class="small">Total earned: <strong id="total">0</strong></div>
+</section>
+<section class="panel">
+<nav class="tabs">
+  <button class="tab active" data-tab="shop">🛒 Shop</button>
+  <button class="tab" data-tab="leaderboard">🏆 Leaderboard</button>
+  <button class="tab" data-tab="stats">📊 Stats</button>
+</nav>
+<div class="section active" id="shop"><h2>Upgrade Shop</h2><div class="shop" id="shop"></div></div>
+<div class="section" id="leaderboard">
+  <h2>🏆 Leaderboard</h2>
+  <div class="notice">
+    <strong>Choose your leaderboard name</strong>
+    <p class="small">Your name is saved on this device and shown beside your score.</p>
+    <label for="playerName">Player name (3–20 letters, numbers, or underscores)</label>
+    <div class="row"><input id="playerName" maxlength="20" placeholder="Choose a name"><button id="saveName">Save name</button></div>
+    <div id="nameStatus" class="small" aria-live="polite"></div>
+  </div>
+  <h3>Local top scores</h3><div id="leaderboardList"></div>
+  <p class="small">This standalone file stores leaderboard entries in this browser only. It does not connect to your site's online leaderboard service.</p>
+</div>
+<div class="section" id="stats"><h2>📊 Your Stats</h2>
+  <div class="entry"><span>Total earned</span><strong id="statTotal">0</strong></div>
+  <div class="entry"><span>Click power</span><strong id="statClick">1</strong></div>
+  <div class="entry"><span>TV per second</span><strong id="statAuto">0</strong></div>
+  <div class="entry"><span>Multiplier</span><strong id="statMult">x1</strong></div>
+  <div class="entry"><span>Upgrades purchased</span><strong id="statOwned">0</strong></div>
+  <button id="reset">Reset local game</button>
+</div>
+</section>
+</div>
+</main>
+<script>
+"use strict";
+const QI=10n**18n, MAX_BALANCE=1000n*QI, MAX_UPGRADE=500n*QI;
+const items=[
+{name:"Remote Control",desc:"+1 TV per click",base:15n,kind:"click",amount:1n},
+{name:"Antenna Booster",desc:"+2 TV per second",base:60n,kind:"auto",amount:2n},
+{name:"HD Screen",desc:"+10 TV per click",base:250n,kind:"click",amount:10n},
+{name:"Broadcast Desk",desc:"+25 TV per second",base:900n,kind:"auto",amount:25n},
+{name:"Signal Tower",desc:"+100 TV per second",base:5000n,kind:"auto",amount:100n},
+{name:"Studio Upgrade",desc:"+500 TV per click",base:25000n,kind:"click",amount:500n},
+{name:"Network Hub",desc:"+2,500 TV per second",base:150000n,kind:"auto",amount:2500n},
+{name:"Prime Time",desc:"More TV power",base:200000n,kind:"click",amount:1000n}
+];
+items.pop();
+items.push(
+{name:"Satellite Link",desc:"+10,000 TV per second",base:900000n,kind:"auto",amount:10000n},
+{name:"Mega Broadcast",desc:"+50,000 TV per click",base:5000000n,kind:"click",amount:50000n},
+{name:"Global Network",desc:"+250,000 TV per second",base:30000000n,kind:"auto",amount:250000n},
+{name:"Cosmic Channel",desc:"+1,000,000 TV per click",base:150000000n,kind:"click",amount:1000000n}
+);
+let state={tv:0n,total:0n,click:1n,auto:0n,mult:1n,owned:Array(items.length).fill(0),name:localStorage.getItem("tvclicker_name")||"Player"};
+const $=id=>document.getElementById(id);
+function cap(n,max=MAX_BALANCE){return n<0n?0n:n>max?max:n}
+function fmt(n){n=BigInt(n);if(n>=QI)return (Number(n/QI)).toLocaleString()+" Qi";return n.toLocaleString()}
+function price(item,i){let p=item.base*(150n**BigInt(Math.min(10000,state.owned[i])))/(100n**BigInt(Math.min(10000,state.owned[i])));return p>MAX_UPGRADE?MAX_UPGRADE:p}
+function save(){state.tv=cap(state.tv);state.total=cap(state.total);state.click=cap(state.click,MAX_UPGRADE);state.auto=cap(state.auto,MAX_UPGRADE);state.mult=cap(state.mult,MAX_UPGRADE);localStorage.setItem("tvclicker_save",JSON.stringify({...state,tv:String(state.tv),total:String(state.total),click:String(state.click),auto:String(state.auto),mult:String(state.mult)}))}
+function render(){
+ state.tv=cap(state.tv);state.total=cap(state.total);
+ $("balance").textContent=fmt(state.tv)+" TV";$("total").textContent=fmt(state.total);
+ $("perClick").textContent="+"+fmt(cap(state.click*state.mult,MAX_UPGRADE))+" / click";
+ $("perSecond").textContent=fmt(cap(state.auto*state.mult,MAX_UPGRADE))+" / sec";
+ $("statTotal").textContent=fmt(state.total);$("statClick").textContent=fmt(state.click*state.mult);$("statAuto").textContent=fmt(state.auto*state.mult);$("statMult").textContent="x"+fmt(state.mult);$("statOwned").textContent=state.owned.reduce((a,b)=>a+b,0);
+ $("shop").innerHTML="";
+ items.forEach((it,i)=>{let cost=price(it,i),card=document.createElement("article");card.className="item";
+ let h=document.createElement("h3");h.textContent=it.name;let p=document.createElement("p");p.textContent=it.desc;
+ let owned=document.createElement("div");owned.className="small";owned.textContent="Owned: "+state.owned[i];
+ let foot=document.createElement("div");foot.className="item-foot";let pr=document.createElement("span");pr.className="price";pr.textContent=fmt(cost)+" TV";
+ let b=document.createElement("button");b.textContent="BUY";b.disabled=state.tv<cost||((it.kind==="click"?state.click:state.auto)>=MAX_UPGRADE);b.onclick=()=>buy(i);
+ foot.append(pr,b);card.append(h,p,owned,foot);$("shop").append(card);
+ });
+ $("playerName").value=state.name;renderBoard();
+}
+function buy(i){let it=items[i],cost=price(it,i);if(state.tv<cost)return;state.tv-=cost;state.owned[i]++;if(it.kind==="click")state.click=cap(state.click+it.amount,MAX_UPGRADE);if(it.kind==="auto")state.auto=cap(state.auto+it.amount,MAX_UPGRADE);render();save()}
+function gain(n){n=cap(n);let got=state.tv+n-state.tv;state.tv=cap(state.tv+n);state.total=cap(state.total+got);render();save()}
+$("clicker").onclick=()=>gain(state.click*state.mult);
+setInterval(()=>{if(state.auto>0n)gain(state.auto*state.mult)},1000);
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===b));document.querySelectorAll(".section").forEach(x=>x.classList.toggle("active",x.id===b.dataset.tab));});
+function renderBoard(){let rows=JSON.parse(localStorage.getItem("tvclicker_local_board")||"[]");let idx=rows.findIndex(x=>x.name===state.name);if(idx<0)rows.push({name:state.name,score:String(state.total)});else if(BigInt(rows[idx].score)<state.total)rows[idx].score=String(state.total);rows.sort((a,b)=>BigInt(a.score)>BigInt(b.score)?-1:BigInt(a.score)<BigInt(b.score)?1:0);rows=rows.slice(0,10);localStorage.setItem("tvclicker_local_board",JSON.stringify(rows));$("leaderboardList").innerHTML="";rows.forEach((r,i)=>{let d=document.createElement("div");d.className="entry";let n=document.createElement("span");n.textContent=(i+1)+". "+r.name;let v=document.createElement("strong");v.textContent=fmt(BigInt(r.score));d.append(n,v);$("leaderboardList").append(d)})}
+$("saveName").onclick=()=>{let n=$("playerName").value.trim();if(!/^[A-Za-z0-9_]{3,20}$/.test(n)){$("nameStatus").textContent="Use 3–20 letters, numbers, or underscores.";return}state.name=n;localStorage.setItem("tvclicker_name",n);$("nameStatus").textContent="Name saved!";render();save()};
+$("reset").onclick=()=>{if(!confirm("Reset this browser's local game?"))return;localStorage.removeItem("tvclicker_save");location.reload()};
+try{let raw=JSON.parse(localStorage.getItem("tvclicker_save")||"null");if(raw){state.tv=BigInt(raw.tv||0);state.total=BigInt(raw.total||0);state.click=BigInt(raw.click||1);state.auto=BigInt(raw.auto||0);state.mult=BigInt(raw.mult||1);state.owned=Array.from({length:items.length},(_,i)=>Math.max(0,Number(raw.owned?.[i])||0));state.name=raw.name||state.name}}catch(e){}
+render();save();
+</script>
+</body>
+</html>
